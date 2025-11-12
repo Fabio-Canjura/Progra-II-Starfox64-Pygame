@@ -1,0 +1,61 @@
+#Ventana Principal del juego
+import pygame
+from constantes import ANCHO, ALTO, FPS, NEGRO
+from entities.airwing import Arwing
+
+# Iniciar Pygame
+pygame.init()
+ventana = pygame.display.set_mode((ANCHO, ALTO))
+pygame.display.set_caption("StarFox 2D")
+clock = pygame.time.Clock()
+
+# Agrupar los Sprites a dibujar
+todos_los_sprites = pygame.sprite.Group()
+grupo_balas = pygame.sprite.Group()
+
+# Creación de nave Airwing
+arwing = Arwing()
+todos_los_sprites.add(arwing)
+
+# Clase borrador de proyectil
+class Proyectil(pygame.sprite.Sprite):
+    def __init__(self, x, y, velocidad_y=-10, danio=10):
+        super().__init__()
+        self.image = pygame.Surface((5, 15))
+        self.image.fill((0, 200, 255))
+        self.rect = self.image.get_rect(center=(x, y))
+        self.velocidad_y = velocidad_y
+        self.danio = danio
+
+    def update(self):
+        self.rect.y += self.velocidad_y
+        if self.rect.bottom < 0:
+            self.kill()
+
+# Bucle principal de la pantalla.
+ejecutando = True
+while ejecutando:
+    clock.tick(FPS)
+    #Bucle que obtiene interacción con ventana.
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            ejecutando = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                nuevo_proyectil = Proyectil(
+                    arwing.rect.centerx,
+                    arwing.rect.top,
+                    velocidad_y=-15,
+                    danio=arwing.armas["disparo_normal"]["danio"]
+                )
+                grupo_balas.add(nuevo_proyectil)
+                todos_los_sprites.add(nuevo_proyectil)
+
+    todos_los_sprites.update()
+    arwing.mover()
+
+    ventana.fill(NEGRO)
+    todos_los_sprites.draw(ventana)
+    pygame.display.flip()
+
+pygame.quit()
