@@ -13,6 +13,9 @@ class Arwing(ObjetoJuego):
     def __init__(self):
         super().__init__(pos_x=POS_INICIO_X, pos_y=POS_INICIO_Y, vida_inicial=vida_inicial_airwing)
 
+        # atributo para la vida del Airwing 
+        self.salud = vida_inicial_airwing
+
         # Atributos de modificación propios de movimiento.
         self.velocidad_actual = velocidad_inicial_airwing
         self.aceleracion = aceleracion
@@ -64,3 +67,15 @@ class Arwing(ObjetoJuego):
             self.tiempo_ultimo_disparo = tiempo_actual
 
 
+    # Metodo para recibir dano
+    def recibir_dano(self, dano):
+        self.salud = self.salud - dano # Resta el daño a la salud
+        if self.salud <= 0:
+            self.explotar() # explota cuando salud < 0
+
+    # Metodo para eliminar naves al morir
+    def explotar(self):
+        # Nota: hay que cargar la animacion cuando explota
+        self.kill() # metodo de pygames que elimina el sprite del grupo de sprites
+
+    # Metodo para reducir velocidad al colisionar
