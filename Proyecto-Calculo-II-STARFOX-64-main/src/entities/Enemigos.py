@@ -5,7 +5,7 @@ import pygame
 from entities.Objetos_Madre import ObjetoJuego
 
 class Enemigos(ObjetoJuego):
-    def __init__(self, pos_x, pos_y, velocidad, imagen= "assets/images/enemies/cuadrorojo.png"):
+    def __init__(self, pos_x, pos_y, velocidad, imagen= "Proyecto-Calculo-II-STARFOX-64-main/assets/images/enemies/cuadrorojo.png"):
         # Llamamos al constructor de la clase base
         super().__init__(pos_x, pos_y, vida_inicial=100, imagen=imagen, tam=(50, 50))
         
@@ -15,7 +15,7 @@ class Enemigos(ObjetoJuego):
 
         # cargar la imagen del enemigo ( temporal para pruebas )
 
-        self.image = pygame.image.load("assets/images/enemies/cuadrorojo.png").convert_alpha()
+        self.image = pygame.image.load("Proyecto-Calculo-II-STARFOX-64-main/assets/images/enemies/cuadrorojo.png").convert_alpha()
 
         # movimiento aleatorio de las naves
 
