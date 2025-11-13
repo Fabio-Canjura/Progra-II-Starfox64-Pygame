@@ -19,8 +19,9 @@ arwing = Arwing()
 todos_los_sprites.add(arwing)
 
 # Creacion de nave enemiga
-enemigo = Enemigos (pos_x=100, pos_y=50, velocidad=5)
+enemigo = Enemigos (pos_x=100, pos_y=50, velocidad=5) # parametros de prueba
 todos_los_sprites.add(enemigo)
+
 
 # Clase borrador de proyectil
 class Proyectil(pygame.sprite.Sprite):
@@ -58,7 +59,12 @@ while ejecutando:
 
     todos_los_sprites.update()
     arwing.mover()
-
+    
+    # mover los enemigos
+    for enemigo in todos_los_sprites:
+        if isinstance(enemigo, Enemigos):  # Mover solo los enemigos # hay que modificar la condicion para que se mueva diferente
+            enemigo.mover()
+            
     ventana.fill(NEGRO)
     todos_los_sprites.draw(ventana)
     pygame.display.flip()
