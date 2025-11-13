@@ -1,14 +1,23 @@
 #Ventana Principal del juego
+
+#Imports necesarios para la conexión entre clases
 import pygame
 from constantes import ANCHO, ALTO, FPS, NEGRO
 from entities.airwing import Arwing
 from entities.Enemigos import Enemigos
+from fondo import fondo
+import os
 
 # Iniciar Pygame
 pygame.init()
 ventana = pygame.display.set_mode((ANCHO, ALTO))
 pygame.display.set_caption("StarFox 2D")
 clock = pygame.time.Clock()
+
+#Creación del fondo y dibujar en ventana
+ruta_fondo = os.path.join("assets", "images", "backgrounds", "Ciudad arriba.png")
+print("Ruta cargada:", ruta_fondo)  # Prueba de carga de fondo
+fondo_juego = fondo(ruta_imagen=ruta_fondo, velocidad=120)
 
 # Agrupar los Sprites a dibujar
 todos_los_sprites = pygame.sprite.Group()
@@ -41,7 +50,7 @@ class Proyectil(pygame.sprite.Sprite):
 # Bucle principal de la pantalla.
 ejecutando = True
 while ejecutando:
-    clock.tick(FPS)
+    segundos_por_frame=clock.tick(FPS) / 1000.0
     #Bucle que obtiene interacción con ventana.
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -57,6 +66,7 @@ while ejecutando:
                 grupo_balas.add(nuevo_proyectil)
                 todos_los_sprites.add(nuevo_proyectil)
 
+    fondo_juego.actualizar(segundos_por_frame)
     todos_los_sprites.update()
     arwing.mover()
     
@@ -65,7 +75,7 @@ while ejecutando:
         if isinstance(enemigo, Enemigos):  # Mover solo los enemigos # hay que modificar la condicion para que se mueva diferente
             enemigo.mover()
             
-    ventana.fill(NEGRO)
+    fondo_juego.dibujar_en(ventana)
     todos_los_sprites.draw(ventana)
     pygame.display.flip()
 
