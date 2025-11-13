@@ -1,0 +1,7 @@
+# Ignorar archivos temporales
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.log
+*.tmp
