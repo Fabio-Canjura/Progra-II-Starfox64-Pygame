@@ -1,5 +1,6 @@
 # Este archivo configura los comportamientos propios del Arwing de Fox McCloud
 import pygame
+import os
 from constantes import (
     ANCHO, ALTO, POS_INICIO_X, POS_INICIO_Y,
     vida_inicial_airwing, velocidad_inicial_airwing, velocidad_maxima_airwing,
@@ -12,7 +13,18 @@ class Arwing(ObjetoJuego):
 
     def __init__(self):
         super().__init__(pos_x=POS_INICIO_X, pos_y=POS_INICIO_Y, vida_inicial=vida_inicial_airwing)
-
+        # Cargar sprite real del Airwing
+        ruta_airwing = os.path.join("assets", "images", "player", "nave_fox.png")
+        try:
+            self.image = pygame.image.load(ruta_airwing).convert_alpha()
+            self.image = pygame.transform.scale(self.image, (64, 64))
+        except Exception as e:
+            print("Error al cargar sprite del Arwing, usando placeholder.")
+            self.image = pygame.Surface((50, 50))
+            self.image.fill((0, 0, 255))
+            
+        #self.rect = self.image.get_rect(center=(POS_INICIO_X, POS_INICIO_Y))
+        
         # atributo para la vida del Airwing 
         self.salud = vida_inicial_airwing
 
@@ -20,34 +32,22 @@ class Arwing(ObjetoJuego):
         self.velocidad_actual = velocidad_inicial_airwing
         self.aceleracion = aceleracion
 
-        # Borrador de diccionario de diccionario de armas.
-        self.armas = {
-            "disparo_normal": {
-                "danio": danio_disparo_normal,
-                "cadencia_max": 5,  # Disparos por segundo
-                "tiempo_recarga": 0,
-                "activo": True
-            },
-            "bomba": {
-                "danio": 50,
-                "cantidad": 3,
-                "activo": False
-            }
-        }
-
-        self.tiempo_ultimo_disparo = pygame.time.get_ticks()
+       # ESTA ES LA QUE IMPORTA:
+    def update(self, segundos_por_frame):
+        self.mover(segundos_por_frame)
 
     # Movimiento del Arwing
-    def mover(self):
+    def mover(self, segundos_por_frame):
         keys = pygame.key.get_pressed()
+        desplazamiento = int(self.velocidad_actual * segundos_por_frame)
         if keys[pygame.K_LEFT]:
-            self.rect.x -= self.velocidad_actual
+            self.rect.x -= desplazamiento
         if keys[pygame.K_RIGHT]:
-            self.rect.x += self.velocidad_actual
+            self.rect.x += desplazamiento
         if keys[pygame.K_UP]:
-            self.rect.y -= self.velocidad_actual
+            self.rect.y -= desplazamiento
         if keys[pygame.K_DOWN]:
-            self.rect.y += self.velocidad_actual
+            self.rect.y += desplazamiento
 
         # Limitar dentro de pantalla
         self.rect.left = max(0, self.rect.left)

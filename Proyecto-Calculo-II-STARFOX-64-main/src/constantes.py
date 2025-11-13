@@ -9,8 +9,8 @@ NEGRO = (0, 0, 0)
 FPS = 60
 # Configuraciones base para el Arwing
 vida_inicial_airwing = 100
-velocidad_inicial_airwing = 5
-velocidad_maxima_airwing = 10
+velocidad_inicial_airwing = 200
+velocidad_maxima_airwing = 300
 aceleracion = 0.5 
 POS_INICIO_X = ANCHO // 2
 POS_INICIO_Y = ALTO - 50

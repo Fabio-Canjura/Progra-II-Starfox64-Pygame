@@ -13,9 +13,9 @@ pygame.init()
 ventana = pygame.display.set_mode((ANCHO, ALTO))
 pygame.display.set_caption("StarFox 2D")
 clock = pygame.time.Clock()
-
+ 
 #Creación del fondo y dibujar en ventana
-ruta_fondo = os.path.join("assets", "images", "backgrounds", "Ciudad arriba.png")
+ruta_fondo = os.path.join("assets", "images", "backgrounds", "Ciudad_arriba.png")
 fondo_juego = fondo(ruta_imagen=ruta_fondo, velocidad=120)
 
 # Agrupar los Sprites a dibujar
@@ -67,8 +67,8 @@ while ejecutando:
                 todos_los_sprites.add(nuevo_proyectil)
 
     fondo_juego.actualizar(segundos_por_frame)
-    todos_los_sprites.update()
-    arwing.mover()
+    todos_los_sprites.update(segundos_por_frame)
+    arwing.mover(segundos_por_frame)
     
     # mover los enemigos
     for enemigo in todos_los_sprites:

@@ -19,6 +19,10 @@ class ObjetoJuego(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(pos_x, pos_y))
         self.velocidad = pygame.math.Vector2(0, 0)
         self.salud = vida_inicial
+        
+    def update(self, dt):
+        """Método polimórfico para ser sobrescrito por subclases."""
+        pass
 
     def recibir_danio(self, cantidad):
         """Resta salud al objeto y lo elimina si llega a cero."""
@@ -34,6 +38,3 @@ class ObjetoJuego(pygame.sprite.Sprite):
         """Elimina el sprite del grupo."""
         self.kill()
 
-    def actualizar_pantalla(self):
-        """Llama al movimiento y actualiza la posición."""
-        self.mover()
