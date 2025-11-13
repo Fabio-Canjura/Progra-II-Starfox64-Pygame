@@ -27,9 +27,9 @@ arwing = Arwing()
 todos_los_sprites.add(arwing)
 
 # Creacion de nave enemiga
-#ruta_imagen_enemigo = os.path.join("assets", "images", "enemies", "cuadradorojo.png")
-#enemigo = Enemigos (pos_x=100, pos_y=50, velocidad=5, ruta_imagen_enemigo) # parametros de prueba
-#todos_los_sprites.add(enemigo)
+ruta_imagen_enemigo = os.path.join("Proyecto-Calculo-II-STARFOX-64-main/assets/images/enemies/Enemigo_rojo_no_fondo.png")
+enemigo = Enemigos(ruta_imagen=ruta_imagen_enemigo, pos_x= 100, pos_y= 50, velocidad=5)  
+todos_los_sprites.add(enemigo)
 
 
 # Clase borrador de proyectil
