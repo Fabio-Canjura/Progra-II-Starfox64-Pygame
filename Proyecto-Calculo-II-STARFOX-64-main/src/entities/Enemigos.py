@@ -6,9 +6,9 @@ from entities.Objetos_Madre import ObjetoJuego
 from constantes import ANCHO, ALTO
 
 class Enemigos(ObjetoJuego):
-    def __init__(self, pos_x, pos_y, velocidad, imagen= "Proyecto-Calculo-II-STARFOX-64-main/assets/images/enemies/cuadrorojo.png"):
+    def __init__(self, ruta_imagen, pos_x, pos_y, velocidad):
         # Llamamos al constructor de la clase base
-        super().__init__(pos_x, pos_y, vida_inicial=100, imagen=imagen, tam=(50, 50))
+        super().__init__(pos_x, pos_y, vida_inicial=100, ruta_imagen=ruta_imagen, tam=(50, 50))
         
         # Atributos para los enemigos
 
