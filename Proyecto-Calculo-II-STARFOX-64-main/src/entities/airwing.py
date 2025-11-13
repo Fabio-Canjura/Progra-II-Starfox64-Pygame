@@ -14,7 +14,7 @@ class Arwing(ObjetoJuego):
     def __init__(self):
         super().__init__(pos_x=POS_INICIO_X, pos_y=POS_INICIO_Y, vida_inicial=vida_inicial_airwing)
         # Cargar sprite real del Airwing
-        ruta_airwing = os.path.join("assets", "images", "player", "nave_fox.png")
+        ruta_airwing = os.path.join("Proyecto-Calculo-II-STARFOX-64-main/assets/images/player/nave_fox.png")
         try:
             self.image = pygame.image.load(ruta_airwing).convert_alpha()
             self.image = pygame.transform.scale(self.image, (64, 64))
