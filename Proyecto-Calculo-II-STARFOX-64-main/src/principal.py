@@ -2,6 +2,7 @@
 import pygame
 from constantes import ANCHO, ALTO, FPS, NEGRO
 from entities.airwing import Arwing
+from entities.Enemigos import Enemigos
 
 # Iniciar Pygame
 pygame.init()
@@ -16,6 +17,10 @@ grupo_balas = pygame.sprite.Group()
 # Creación de nave Airwing
 arwing = Arwing()
 todos_los_sprites.add(arwing)
+
+# Creacion de nave enemiga
+# enemigo = Enemigos (pos_x=100, pos_y=50, velocidad=5)
+# todos_los_sprites.add(enemigo)
 
 # Clase borrador de proyectil
 class Proyectil(pygame.sprite.Sprite):
