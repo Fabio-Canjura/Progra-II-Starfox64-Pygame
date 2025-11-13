@@ -19,8 +19,8 @@ arwing = Arwing()
 todos_los_sprites.add(arwing)
 
 # Creacion de nave enemiga
-# enemigo = Enemigos (pos_x=100, pos_y=50, velocidad=5)
-# todos_los_sprites.add(enemigo)
+enemigo = Enemigos (pos_x=100, pos_y=50, velocidad=5)
+todos_los_sprites.add(enemigo)
 
 # Clase borrador de proyectil
 class Proyectil(pygame.sprite.Sprite):

@@ -3,10 +3,9 @@ import random
 import pygame
 
 from entities.Objetos_Madre import ObjetoJuego
-from constantes import ANCHO, ALTO
 
 class Enemigos(ObjetoJuego):
-    def __init__(self, pos_x, pos_y, velocidad, imagen="assets/images/enemies/cuadrorojo.png"):
+    def __init__(self, pos_x, pos_y, velocidad, imagen= "assets/images/enemies/cuadrorojo.png"):
         # Llamamos al constructor de la clase base
         super().__init__(pos_x, pos_y, vida_inicial=100, imagen=imagen, tam=(50, 50))
         
@@ -18,17 +17,16 @@ class Enemigos(ObjetoJuego):
 
         self.image = pygame.image.load("assets/images/enemies/cuadrorojo.png").convert_alpha()
 
-
         # movimiento aleatorio de las naves
 
-        self.velocidad_aleatoria = random.randint(1,3) # rango de velocidad aleatoria en el eje Y
+        self.velocidad_aleatoria_y = random.randint(1,3) # rango de velocidad aleatoria en el eje Y
         self.movimiento_x = random.randint(-2, 2)  # movimiento aleatorio en el eje X (-2 a 2 píxeles por fotograma)
 
 
     #Metodo para dictar el movimiento de las naves enemigas
     def mover (self):
      
-        self.rect.y = self.rect.y + self.velocidad_aleatoria # mover enemigo en eje y aleatoreamente
+        self.rect.y = self.rect.y + self.velocidad_aleatoria_y # mover enemigo en eje y aleatoreamente
 
         self.rect.x = self.rect.x + self.movimiento_x # mover enemigo en el eje x aleatoreamente
 
