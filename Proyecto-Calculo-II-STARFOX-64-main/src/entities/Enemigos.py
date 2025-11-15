@@ -8,7 +8,7 @@ from constantes import ANCHO, ALTO
 class Enemigos(ObjetoJuego):
     def __init__(self, ruta_imagen, pos_x, pos_y, velocidad):
         # Llamamos al constructor de la clase base primero
-        super().__init__(pos_x, pos_y, vida_inicial=100, imagen=ruta_imagen, tam=(50, 50))
+        super().__init__(pos_x, pos_y, imagen=ruta_imagen, tam=(50, 50))
 
         # Cargar la imagen del enemigo
         self.image = pygame.image.load(ruta_imagen).convert_alpha()
@@ -27,7 +27,7 @@ class Enemigos(ObjetoJuego):
         self.direccion_x = -2  # Moviento de direccion: -2 = izquierda, 2 = derecha
         self.movimiento_x = 2  # Movimiento constante en el eje X
 
-    def mover(self):
+    def mover(self, segundos_por_frame):
         # Mover enemigo hacia abajo
         self.rect.y = self.rect.y + self.velocidad_aleatoria_y  # Mueve el enemigo hacia abajo
 
@@ -51,3 +51,7 @@ class Enemigos(ObjetoJuego):
         limite_superior = ALTO * 0.2
         self.rect.top = max(limite_superior, self.rect.top)
         self.rect.bottom = min(ALTO, self.rect.bottom)
+        
+    def update(self, segundos_por_frame):
+        self.mover(segundos_por_frame)
+

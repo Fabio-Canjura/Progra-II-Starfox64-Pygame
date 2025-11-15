@@ -18,7 +18,7 @@ pygame.display.set_caption("StarFox 2D")
 clock = pygame.time.Clock()
  
 #Creación del fondo y dibujar en ventana
-ruta_fondo = os.path.join("assets", "images", "backgrounds", "Ciudad_arriba.png")
+ruta_fondo = os.path.join("assets", "images", "backgrounds", "Espacio_exterior_1.png")
 fondo_juego = fondo(ruta_imagen=ruta_fondo, velocidad=120)
 
 # Agrupar los Sprites a dibujar
@@ -33,7 +33,7 @@ todos_los_sprites.add(arwing)
 meteoritos = pygame.sprite.Group() # unir los meteoritos al sprite de pygame
 
 # Creacion de nave enemiga
-ruta_imagen_enemigo = os.path.join("Proyecto-Calculo-II-STARFOX-64-main/assets/images/enemies/Enemigo_rojo_no_fondo.png")
+ruta_imagen_enemigo = os.path.join("assets", "images", "enemies", "Enemigo_rojo_no_fondo.png")
 enemigo = Enemigos(ruta_imagen=ruta_imagen_enemigo, pos_x= 100, pos_y= 50, velocidad=5)  
 todos_los_sprites.add(enemigo)
 
@@ -97,13 +97,13 @@ while ejecutando:
 
     fondo_juego.actualizar(segundos_por_frame)
     todos_los_sprites.update(segundos_por_frame)
-    arwing.mover(segundos_por_frame)
-    
+    """
     # mover los enemigos
     for enemigo in todos_los_sprites:
         if isinstance(enemigo, Enemigos):  # Mover solo los enemigos # hay que modificar la condicion para que se mueva diferente
             enemigo.mover()
     # LLamar los meteoritos
+    """
             
     fondo_juego.dibujar_en(ventana)
     todos_los_sprites.draw(ventana)

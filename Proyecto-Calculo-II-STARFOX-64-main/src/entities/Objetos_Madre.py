@@ -2,9 +2,10 @@ import pygame
 from constantes import ANCHO, ALTO
 
 class ObjetoJuego(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y, vida_inicial=100, imagen=None, tam=(50, 50)):
+    def __init__(self, pos_x, pos_y, imagen=None, tam=(50, 50)):
         super().__init__()
 
+        #Carga de sprite
         if imagen:
             try:
                 self.image = pygame.image.load(imagen).convert_alpha()
@@ -15,26 +16,15 @@ class ObjetoJuego(pygame.sprite.Sprite):
             self.image = pygame.Surface(tam)
             self.image.fill((255, 255, 255))
 
-        # Configurar rect y salud
+        # Rectangulo del objeto
         self.rect = self.image.get_rect(center=(pos_x, pos_y))
-        self.velocidad = pygame.math.Vector2(0, 0)
-        self.salud = vida_inicial
         
-    def update(self, dt):
+    def update(self, segundos_por_frame):
         """Método polimórfico para ser sobrescrito por subclases."""
         pass
-
-    def recibir_danio(self, cantidad):
-        """Resta salud al objeto y lo elimina si llega a cero."""
-        self.salud -= cantidad
-        if self.salud <= 0:
-            self.morir()
 
     def mover(self):
         """Método polimórfico que las subclases deben sobreescribir."""
         pass
 
-    def morir(self):
-        """Elimina el sprite del grupo."""
-        self.kill()
 
