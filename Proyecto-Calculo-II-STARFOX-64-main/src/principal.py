@@ -47,12 +47,8 @@ def crear_meteoritos():
         # velocidad: un numero aleatorio entre 2 y 5 para que algunos caigan más rápido y otros más lento. ( calculo robado )
         # imagen: la imagen es solo de prueba, se puede usar una mejor si la tenemos
 
-        meteorito = Obstaculos(
-            pos_x=random.randint(0, ANCHO - 40),
-            pos_y=-40,
-            velocidad=random.randint(2, 5),
-            imagen="Proyecto-Calculo-II-STARFOX-64-main/assets/images/enemies/Asteroid_2_minerals.png"
-        )
+        ruta_imagen_meteorito = os.path.join("assets", "images", "enemies", "Asteroid_2_minerals.png")
+        meteorito = Obstaculos(pos_x=random.randint(0, ANCHO - 40), pos_y=-40, velocidad=random.randint(2, 5),ruta_imagen=ruta_imagen_meteorito)
         meteoritos.add(meteorito)
         todos_los_sprites.add(meteorito)
 

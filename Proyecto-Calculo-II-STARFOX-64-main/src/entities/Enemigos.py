@@ -9,7 +9,7 @@ class Enemigos(ObjetoJuego):
     def __init__(self, ruta_imagen, pos_x, pos_y, velocidad):
         # Llamamos al constructor de la clase base primero
         super().__init__(pos_x, pos_y, imagen=ruta_imagen, tam=(50, 50))
-
+        
         # Cargar la imagen del enemigo
         self.image = pygame.image.load(ruta_imagen).convert_alpha()
         self.image = pygame.transform.scale(self.image, (50, 50))  # Ajustar tamaño de la imagen

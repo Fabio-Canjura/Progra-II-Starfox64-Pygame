@@ -5,7 +5,7 @@ from constantes import ANCHO, ALTO
 class fondo:
     def __init__(self, ruta_imagen, velocidad=120):
         try:
-            self.imagen = pygame.image.load("Proyecto-Calculo-II-STARFOX-64-main/assets/images/backgrounds/Espacio_exterior_1.png").convert()
+            self.imagen = pygame.image.load(ruta_imagen).convert()
             self.imagen = pygame.transform.scale(self.imagen, (ANCHO, ALTO))
         except Exception as e:
             print(f"ERROR al cargar el fondo, se utilizará uno por defecto.")

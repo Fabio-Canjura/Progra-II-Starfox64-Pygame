@@ -7,13 +7,13 @@ from entities.Objetos_Madre import ObjetoJuego
 
 class Obstaculos(ObjetoJuego):
 
-    def __init__(self, pos_x, pos_y, velocidad, imagen):
-        super().__init__(pos_x, pos_y, imagen=imagen, tam=(40, 40))
+    def __init__(self, pos_x, pos_y, velocidad, ruta_imagen):
+        super().__init__(pos_x, pos_y, imagen=ruta_imagen, tam=(40, 40))
 
         # configuracion de caida de los objetos
-
         self.veloc_caida_y = velocidad
-        self.rect.y = random.randint(-100, -40)  # Aparece fuera de la pantalla en la parte superior
+        #Aparece en parte superior de pantalla
+        self.rect.y = random.randint(-100, -40)  
 
     
     def update(self, dt): #dt = delta time

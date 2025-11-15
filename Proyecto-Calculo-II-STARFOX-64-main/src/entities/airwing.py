@@ -16,7 +16,7 @@ class Arwing(ObjetoJuego):
         self.velocidad_base = 180
         self.velocidad_actual = self.velocidad_base
         self.velocidad_maxima = 350   # Aceleración
-        self.velocidad_minima = 90    # Desaceleración
+        self.velocidad_minima = 150    # Desaceleración
         self.potencia_aceleracion = 300 # Para acelerar paulatinamente
 
         # Inicializar ObjetoJuego
