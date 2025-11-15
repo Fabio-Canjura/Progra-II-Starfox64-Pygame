@@ -8,7 +8,7 @@ from entities.Objetos_Madre import ObjetoJuego
 class Obstaculos(ObjetoJuego):
 
     def __init__(self, pos_x, pos_y, velocidad, imagen):
-        super().__init__(pos_x, pos_y, vida_inicial=100, imagen=imagen, tam=(40, 40))
+        super().__init__(pos_x, pos_y, imagen=imagen, tam=(40, 40))
 
         # configuracion de caida de los objetos
 

@@ -23,7 +23,7 @@ class ObjetoJuego(pygame.sprite.Sprite):
         """Método polimórfico para ser sobrescrito por subclases."""
         pass
 
-    def mover(self):
+    def mover(self, segundos_por_frame):
         """Método polimórfico que las subclases deben sobreescribir."""
         pass
 
