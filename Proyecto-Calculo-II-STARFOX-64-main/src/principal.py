@@ -52,12 +52,6 @@ def crear_meteoritos():
         meteoritos.add(meteorito)
         todos_los_sprites.add(meteorito)
 
-
-    def update(self):
-        self.rect.y += self.velocidad_y
-        if self.rect.bottom < 0:
-            self.kill()
-
 # Bucle principal de la pantalla.
 ejecutando = True
 while ejecutando:
@@ -68,6 +62,7 @@ while ejecutando:
             ejecutando = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
+                print(">>> DISPARO DETECTADO")
                 arwing.disparar(grupo_balas)
                 # Añadir proyectiles en pantalla
                 for bala in grupo_balas:
@@ -87,8 +82,8 @@ while ejecutando:
             enemigo.mover()
     # LLamar los meteoritos
     """
-    grupo_balas.update(segundos_por_frame)        
     fondo_juego.dibujar_en(ventana)
+    grupo_balas.update(segundos_por_frame)        
     todos_los_sprites.draw(ventana)
     pygame.display.flip()
 
