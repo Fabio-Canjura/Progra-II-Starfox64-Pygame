@@ -1,16 +1,14 @@
 # Este archivo configura los comportamientos propios del Arwing de Fox McCloud
 import pygame
 import os
-from constantes import (
-    ANCHO, ALTO, POS_INICIO_X, POS_INICIO_Y
-)
+from constantes import (ANCHO, ALTO, POS_INICIO_X, POS_INICIO_Y)
 from entities.Objetos_Madre import ObjetoJuego
+from entities.proyectiles import Proyectil
 
 
 class Arwing(ObjetoJuego):
 
     def __init__(self):
-
         # Configuraciones del Airwing
         self.salud = 100
         self.velocidad_base = 180
@@ -18,13 +16,16 @@ class Arwing(ObjetoJuego):
         self.velocidad_maxima = 350   # Aceleración
         self.velocidad_minima = 150    # Desaceleración
         self.potencia_aceleracion = 300 # Para acelerar paulatinamente
-
+        # Valores para disparar
+        self.cadencia_disparo = 0.20    # 5 disparos * segundo
+        self.tiempo_ultimo_disparo = 0  #Acumulador de tiempo para calculo entre disparos 
+        self.danio_disparo = 10         # daño base del disparo
+        
         # Inicializar ObjetoJuego
         super().__init__(
             pos_x=POS_INICIO_X,
             pos_y=POS_INICIO_Y
         )
-
         # Cargar sprite del Airwing
         ruta_airwing = os.path.join("assets", "images", "player", "nave_fox.png")
         try:
@@ -40,13 +41,12 @@ class Arwing(ObjetoJuego):
 
 
     def update(self, segundos_por_frame):
+        self.tiempo_ultimo_disparo += segundos_por_frame
         self.mover(segundos_por_frame)
 
 
     def mover(self, segundos_por_frame):
-
         keys = pygame.key.get_pressed()
-
         # Acelerar tecla A
         if keys[pygame.K_a]:
             self.velocidad_actual += self.potencia_aceleracion * segundos_por_frame
@@ -88,12 +88,18 @@ class Arwing(ObjetoJuego):
         self.rect.top = max(limite_superior, self.rect.top)
         self.rect.bottom = min(ALTO, self.rect.bottom)
 
+    #Método para disparar.
+    def disparar(self, grupo_balas):
+        if self.tiempo_ultimo_disparo >= self.cadencia_disparo:
+            nuevo_disparo = Proyectil(x=self.rect.centerx, y=self.rect.top, velocidad_y=-600, danio=self.danio_disparo)
+            grupo_balas.add(nuevo_disparo)
+            self.tiempo_ultimo_disparo = 0
+
     # Método para recibir daño
     def recibir_dano(self, cantidad):
         self.salud -= cantidad
         if self.salud <= 0:
             self.explotar()
-
 
     # Método para eliminar la nave
     def explotar(self):
