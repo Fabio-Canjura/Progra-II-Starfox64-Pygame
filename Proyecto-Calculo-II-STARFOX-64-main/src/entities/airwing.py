@@ -17,10 +17,48 @@ class Arwing(ObjetoJuego):
         self.velocidad_minima = 150    # Desaceleración
         self.potencia_aceleracion = 300 # Para acelerar paulatinamente
         # Valores para disparar
-        self.cadencia_disparo = 0.20    # 5 disparos * segundo
+        self.cargar_disparo = True
+        self.cadencia_disparo = 0.0    # 5 disparos * segundo
         self.tiempo_ultimo_disparo = 0  #Acumulador de tiempo para calculo entre disparos 
         self.danio_disparo = 10         # daño base del disparo
-        
+        self.disparo_actual = "disparo_laser"
+        #Diccionario de armas del airwing
+        self.armas = {
+                "disparo_normal": {
+                        "color": (0, 255, 255),   # azul celeste
+                        "velocidad": -600,
+                        "danio": 10,
+                        "tamanio": (6, 18),
+                        "cantidad_balas": 1,
+                        "cadencia": 0.20
+                            },
+                "disparo_doble": {
+                        "color": (0, 255, 0),     # verde
+                        "velocidad": -650,
+                        "danio": 12,
+                        "tamanio": (6, 20),
+                        "cantidad_balas": 2,
+                        "cadencia": 0.30
+                            },
+                "disparo_laser": {
+                        "color": (255, 50, 50),   # Rojo brillante
+                        "velocidad": -700,
+                        "danio": 15,
+                        "tamanio": (7, 22),
+                        "cantidad_balas": 1,
+                        "cadencia": 0.40
+                            },
+                "disparo_cargado": {
+                        "color": (0, 255, 100),   # bomba verde al cargar
+                        "velocidad": -500,
+                        "danio": 40,
+                        "tamanio": (4, 45),
+                        "explosion_radio": 50,
+                        "cantidad_balas": 1,
+                        "cadencia": 0.50
+                            }
+                        }
+
         # Inicializar ObjetoJuego
         super().__init__(
             pos_x=POS_INICIO_X,
@@ -90,10 +128,68 @@ class Arwing(ObjetoJuego):
 
     #Método para disparar.
     def disparar(self, grupo_balas):
-        if self.tiempo_ultimo_disparo >= self.cadencia_disparo:
-            nuevo_disparo = Proyectil(x=self.rect.centerx, y=self.rect.top, velocidad_y=-600, danio=self.danio_disparo)
-            grupo_balas.add(nuevo_disparo)
-            self.tiempo_ultimo_disparo = 0
+        cadencia_disparo = self.armas[self.disparo_actual]["cadencia"] #Obtener la cadencia de disparo del arma actual
+        if self.tiempo_ultimo_disparo < cadencia_disparo:
+            return  # Tiempo de espera entre disparos 
+
+        disparo = self.armas[self.disparo_actual]
+
+        # Parámetros desde diccionario
+        vel_y = disparo["velocidad"]
+        danio = disparo["danio"]
+        ancho, alto = disparo["tamanio"]
+        cantidad = disparo["cantidad_balas"]
+
+        # Posición base (centro del Arwing)
+        x_base = self.rect.centerx
+        y_base = self.rect.top
+
+        # Disparo a utilizar
+        if cantidad == 1:
+            # Un solo proyectil
+            bala = Proyectil(
+                x=x_base,
+                y=y_base,
+                velocidad_y=vel_y,
+                danio=danio,
+                color=disparo["color"],
+                ancho=ancho,
+                alto=alto
+            )
+            grupo_balas.add(bala)
+
+        elif cantidad == 2:
+            offset = 15  # separación horizontal entre los dos láseres
+
+            bala_izq = Proyectil(
+                x=x_base - offset,
+                y=y_base,
+                velocidad_y=vel_y,
+                danio=danio,
+                color=disparo["color"],
+                ancho=ancho,
+                alto=alto
+            )
+
+            bala_der = Proyectil(
+                x=x_base + offset,
+                y=y_base,
+                velocidad_y=vel_y,
+                danio=danio,
+                color=disparo["color"],
+                ancho=ancho,
+                alto=alto
+            )
+
+            grupo_balas.add(bala_izq, bala_der)
+
+        # Disparo cargado
+        if self.disparo_actual == "disparo_cargado":
+            # Añadir efecto de explosión 
+            pass
+
+        # Reinicio del tiempo del ultimo disparo
+        self.tiempo_ultimo_disparo = 0
 
     # Método para recibir daño
     def recibir_dano(self, cantidad):
