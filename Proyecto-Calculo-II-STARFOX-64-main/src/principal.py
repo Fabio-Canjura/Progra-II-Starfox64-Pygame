@@ -98,16 +98,16 @@ while ejecutando:
 
     crear_meteoritos() # se llama la funcion para que este dentro del bucle del juego
 
-        # Arwing necesita meteoritos
+     # Actualizamos la nave del jugador. Le pasamos el tiempo del frame y los meteoritos para que pueda detectar choques.
     arwing.update(segundos_por_frame, meteoritos)
 
-    # Los meteoritos solo necesitan segundos
+    # Actualizamos TODOS los meteoritos. Solo necesitan saber cuánto duró el frame para moverse.
     meteoritos.update(segundos_por_frame)
 
-    # Las balas normalmente NO usan segundos
+    # Actualizamos las balas. Estas solo se mueven hacia arriba, no ocupan el tiempo del frame.
     grupo_balas.update()
 
-    # El enemigo usa segundos
+    # Actualizamos al enemigo. También usa el tiempo del frame para moverse de forma más suave.
     enemigo.update(segundos_por_frame)
     
     # deteccion de colisiones
