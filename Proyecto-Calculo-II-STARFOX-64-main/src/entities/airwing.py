@@ -10,6 +10,8 @@ from entities.Objetos_Madre import ObjetoJuego
 class Arwing(ObjetoJuego):
 
     def __init__(self):
+        # Llamamos al constructor de la clase base primero, con los parámetros necesarios
+        super().__init__(pos_x=POS_INICIO_X, pos_y=POS_INICIO_Y)
 
         # Configuraciones del Airwing
         self.salud = 100
@@ -18,12 +20,6 @@ class Arwing(ObjetoJuego):
         self.velocidad_maxima = 350   # Aceleración
         self.velocidad_minima = 150    # Desaceleración
         self.potencia_aceleracion = 300 # Para acelerar paulatinamente
-
-        # Inicializar ObjetoJuego
-        super().__init__(
-            pos_x=POS_INICIO_X,
-            pos_y=POS_INICIO_Y
-        )
 
         # Cargar sprite del Airwing
         ruta_airwing = os.path.join("assets", "images", "player", "nave_fox.png")
@@ -44,6 +40,51 @@ class Arwing(ObjetoJuego):
         self.duracion_lentitud = 1500  # milisegundos (1.5 segundos)
         self.penalizacion_velocidad = 120  # velocidad cuando está lenta    
 
+        #  Valores para disparar
+        self.cadencia_disparo = 0.20    # 5 disparos * segundo
+        self.cargar_disparo = True
+        self.tiempo_ultimo_disparo = 0  # Acumulador de tiempo para cálculo entre disparos 
+        self.danio_disparo = 10         # Daño base del disparo
+
+        self.disparo_actual = "disparo_laser"
+
+        # Diccionario de armas del airwing
+        self.armas = {
+            "disparo_normal": {
+                "color": (0, 255, 255),  # Azul celeste
+                "velocidad": -600,
+                "danio": 10,
+                "tamanio": (6, 18),
+                "cantidad_balas": 1,
+                "cadencia": 0.20
+            },
+            "disparo_doble": {
+                "color": (0, 255, 0),  # Verde
+                "velocidad": -650,
+                "danio": 12,
+                "tamanio": (6, 20),
+                "cantidad_balas": 2,
+                "cadencia": 0.30
+            },
+            "disparo_laser": {
+                "color": (255, 50, 50),  # Rojo brillante
+                "velocidad": -700,
+                "danio": 15,
+                "tamanio": (7, 22),
+                "cantidad_balas": 1,
+                "cadencia": 0.40
+            },
+            "disparo_cargado": {
+                "color": (0, 255, 100),  # Bomba verde al cargar
+                "velocidad": -500,
+                "danio": 40,
+                "tamanio": (4, 45),
+                "explosion_radio": 50,
+                "cantidad_balas": 1,
+                "cadencia": 0.50
+            }
+        }
+
     # metodo para aplicar la lentitud de la nave al colisionar
     def aplicar_lentitud(self):
         if not self.esta_lenta:
@@ -53,7 +94,7 @@ class Arwing(ObjetoJuego):
 
     def update(self, segundos_por_frame, meteoritos):
 
-        # Recuperar velocidad luego del efecto de lentitud
+        # Recuperar velocidad luego del impacto con meteoritos
         if self.esta_lenta:
             tiempo_actual = pygame.time.get_ticks()
             if tiempo_actual - self.tiempo_lentitud >= self.duracion_lentitud:
@@ -63,7 +104,7 @@ class Arwing(ObjetoJuego):
         # Detectar colisión con meteoritos
         colisiones = pygame.sprite.spritecollide(self, meteoritos, False)
 
-        # debug con prints para detectar si hay colisiones // esto es temporal
+        # prints para detectar si hay colisiones // esto es temporal
         print("Arwing rect:", self.rect)
         for m in meteoritos:
             print("Meteorito rect:", m.rect)

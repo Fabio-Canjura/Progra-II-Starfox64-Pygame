@@ -1,5 +1,0 @@
-# Ignorar archivos temporales y compilados
-*.log
-*.tmp
-*.pyc
-__pycache__/
