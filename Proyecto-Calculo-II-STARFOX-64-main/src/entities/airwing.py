@@ -10,10 +10,10 @@ from decorador import registrar_evento
 class Arwing(ObjetoJuego):
 
     def __init__(self):
-        # Llamamos al constructor de la clase base primero, con los parámetros necesarios
+        # Llamamos al constructor de la clase base
         super().__init__(pos_x=POS_INICIO_X, pos_y=POS_INICIO_Y)
-
         # Configuraciones del Airwing
+        self.disparos_para_powerup = 25 # Cantidad de disparos para generar un objeto powerup
         self.estadisticas = {}
         self.salud = 100
         self.velocidad_base = 180
@@ -21,7 +21,6 @@ class Arwing(ObjetoJuego):
         self.velocidad_maxima = 350   # Aceleración
         self.velocidad_minima = 150    # Desaceleración
         self.potencia_aceleracion = 300 # Para acelerar paulatinamente
-
         # Cargar sprite del Airwing
         ruta_airwing = os.path.join("assets", "images", "player", "nave_fox.png")
         try:
@@ -102,7 +101,7 @@ class Arwing(ObjetoJuego):
 
         # Detectar colisión con meteoritos
         colisiones = pygame.sprite.spritecollide(self, meteoritos, False)
-
+        """
         # prints para detectar si hay colisiones // esto es temporal
         print("Arwing rect:", self.rect)
         for m in meteoritos:
@@ -111,7 +110,8 @@ class Arwing(ObjetoJuego):
         if colisiones:
             print("///  COLISIÓN DETECTADA!")
             self.aplicar_lentitud()
-
+        """
+        
         # Mover nave
         self.mover(segundos_por_frame)           
 
@@ -165,56 +165,49 @@ class Arwing(ObjetoJuego):
     #Decorador aplicado a funcion de disparo para generación de powerups
     @registrar_evento("disparos")
     def disparar(self, grupo_balas):
-        #Obtener cadencia del arma actual
-        cadencia_disparo = self.armas[self.disparo_actual]["cadencia"]
-        # Verificación de tiempo entre disparos.
-        if self.tiempo_ultimo_disparo < cadencia_disparo:
-            return
+
+        cadencia = self.armas[self.disparo_actual]["cadencia"]
+
+        # Si no ha pasado el tiempo suficiente no se dispara
+        if self.tiempo_ultimo_disparo < cadencia:
+            return False   # NO contamos el disparo (evento)
+
         disparo = self.armas[self.disparo_actual]
+
         vel_y = disparo["velocidad"]
         danio = disparo["danio"]
         ancho, alto = disparo["tamanio"]
         cantidad = disparo["cantidad_balas"]
+
         x_base = self.rect.centerx
         y_base = self.rect.top
-        # Generar los proyectiles relacionados al arma activa.
+
         if cantidad == 1:
             bala = Proyectil(
-                x=x_base,
-                y=y_base,
-                velocidad_y=vel_y,
-                danio=danio,
-                color=disparo["color"],
-                ancho=ancho,
-                alto=alto
+                x=x_base, y=y_base,
+                velocidad_y=vel_y, danio=danio,
+                color=disparo["color"], ancho=ancho, alto=alto
             )
             grupo_balas.add(bala)
 
         elif cantidad == 2:
-            offset = 15 # Separación entre los disparos.
+            offset = 15
             bala_izq = Proyectil(
-                x=x_base - offset,
-                y=y_base,
-                velocidad_y=vel_y,
-                danio=danio,
-                color=disparo["color"],
-                ancho=ancho,
-                alto=alto
+                x=x_base - offset, y=y_base,
+                velocidad_y=vel_y, danio=danio,
+                color=disparo["color"], ancho=ancho, alto=alto
             )
-
             bala_der = Proyectil(
-                x=x_base + offset,
-                y=y_base,
-                velocidad_y=vel_y,
-                danio=danio,
-                color=disparo["color"],
-                ancho=ancho,
-                alto=alto
+                x=x_base + offset, y=y_base,
+                velocidad_y=vel_y, danio=danio,
+                color=disparo["color"], ancho=ancho, alto=alto
             )
-
             grupo_balas.add(bala_izq, bala_der)
-        # 4. Reinicio del temporizador de disparo
+
+        # Reiniciar el temporizador
         self.tiempo_ultimo_disparo = 0
+
+        return True  # Contar el disparo
 
 
 

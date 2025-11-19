@@ -8,6 +8,7 @@ from entities.airwing import Arwing
 from entities.Enemigos import Enemigos
 from entities.Obstaculos import Obstaculos
 from fondo import fondo
+from entities.power_up import power_up
 
 import os
 
@@ -31,6 +32,9 @@ todos_los_sprites.add(arwing)
 
 # Creacion de meteoritos
 meteoritos = pygame.sprite.Group() # unir los meteoritos al sprite de pygame
+
+#Creación de powerups
+grupo_powerups = pygame.sprite.Group()
 
 # Creacion de nave enemiga
 ruta_imagen_enemigo = os.path.join("assets", "images", "enemies", "Enemigo_rojo_no_fondo.png")
@@ -59,6 +63,11 @@ def detectar_colision_nave_meteoritos(nave, grupo_meteoritos):
         return True
     return False
 
+def crear_powerup():
+    mejora = power_up(tipo="mejora_disparo")
+    grupo_powerups.add(mejora)
+    todos_los_sprites.add(mejora)
+
 # Bucle principal de la pantalla.
 ejecutando = True
 while ejecutando:
@@ -69,11 +78,18 @@ while ejecutando:
             ejecutando = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                arwing.disparar(grupo_balas)
+                resultado = arwing.disparar(grupo_balas)
+                #Momentaneo para verificar si se cuentan los disparos 
+                print("🔵 DISPAROS REGISTRADOS:", arwing.estadisticas.get("disparos", 0))
                 for bala in grupo_balas:
                     if bala not in todos_los_sprites:
                         todos_los_sprites.add(bala)
                 
+                # Verificar si se debe generar powerup
+                if arwing.estadisticas.get("disparos", 0) >= 25:
+                    print("💫 Se generó un PowerUp por 25 disparos!")
+                    arwing.estadisticas["disparos"] = 0  # Reiniciar contador
+                    crear_powerup()
 
 
     crear_meteoritos() # se llama la funcion para que este dentro del bucle del juego
@@ -84,7 +100,7 @@ while ejecutando:
     # Actualizamos TODOS los meteoritos. Solo necesitan saber cuánto duró el frame para moverse.
     meteoritos.update(segundos_por_frame)
 
-    # Actualizamos las balas. Estas solo se mueven hacia arriba, no ocupan el tiempo del frame.
+    # Actualizamos las balas. Estas solo se mueven hacia arriba, no ocupan el tiempo del frame. Da error si no se colocan xD
     grupo_balas.update(segundos_por_frame)
 
     # Actualizamos al enemigo. También usa el tiempo del frame para moverse de forma más suave.

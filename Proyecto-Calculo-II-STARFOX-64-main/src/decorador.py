@@ -1,14 +1,15 @@
+
+#Decorador que incrementa un contador de eventos dentro del Arwing.
 def registrar_evento(nombre_evento):
-    """Decorador que incrementa un contador de eventos dentro del Arwing."""
-    def decorador(func):
-        def wrapper(self, *args, **kwargs):
-            if not hasattr(self, "estadisticas"):
-                self.estadisticas = {}
-
-            if nombre_evento not in self.estadisticas:
-                self.estadisticas[nombre_evento] = 0
-
-            self.estadisticas[nombre_evento] += 1
-            return func(self, *args, **kwargs)
-        return wrapper
+    def decorador(funcion_original):
+        def funcion_decorada(self, grupo_balas):
+            # Ejecutar la función
+            se_disparo = funcion_original(self, grupo_balas)
+            # Solo contar si REALMENTE disparó
+            if se_disparo:
+                self.estadisticas[nombre_evento] = self.estadisticas.get(nombre_evento, 0) + 1
+            return se_disparo
+        return funcion_decorada
     return decorador
+
+
