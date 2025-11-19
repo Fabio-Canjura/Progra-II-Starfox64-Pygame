@@ -70,6 +70,10 @@ while ejecutando:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 arwing.disparar(grupo_balas)
+                for bala in grupo_balas:
+                    if bala not in todos_los_sprites:
+                        todos_los_sprites.add(bala)
+                
 
 
     crear_meteoritos() # se llama la funcion para que este dentro del bucle del juego

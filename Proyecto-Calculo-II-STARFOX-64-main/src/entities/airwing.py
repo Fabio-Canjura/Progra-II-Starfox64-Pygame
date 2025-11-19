@@ -45,7 +45,7 @@ class Arwing(ObjetoJuego):
         self.cargar_disparo = True
         self.tiempo_ultimo_disparo = 0  # Acumulador de tiempo para cálculo entre disparos 
         self.danio_disparo = 10         # Daño base del disparo
-        self.disparo_actual = "disparo_laser"
+        self.disparo_actual = "disparo_normal"
 
         # Diccionario de armas del airwing
         self.armas = {
