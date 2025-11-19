@@ -1,10 +1,10 @@
 # Este archivo configura los comportamientos propios del Arwing de Fox McCloud
 import pygame
 import os
-from constantes import (
-    ANCHO, ALTO, POS_INICIO_X, POS_INICIO_Y
-)
+from constantes import (ANCHO, ALTO, POS_INICIO_X, POS_INICIO_Y)
 from entities.Objetos_Madre import ObjetoJuego
+from entities.proyectiles import Proyectil
+from decorador import registrar_evento
 
 
 class Arwing(ObjetoJuego):
@@ -14,6 +14,7 @@ class Arwing(ObjetoJuego):
         super().__init__(pos_x=POS_INICIO_X, pos_y=POS_INICIO_Y)
 
         # Configuraciones del Airwing
+        self.estadisticas = {}
         self.salud = 100
         self.velocidad_base = 180
         self.velocidad_actual = self.velocidad_base
@@ -41,11 +42,9 @@ class Arwing(ObjetoJuego):
         self.penalizacion_velocidad = 120  # velocidad cuando está lenta    
 
         #  Valores para disparar
-        self.cadencia_disparo = 0.20    # 5 disparos * segundo
         self.cargar_disparo = True
         self.tiempo_ultimo_disparo = 0  # Acumulador de tiempo para cálculo entre disparos 
         self.danio_disparo = 10         # Daño base del disparo
-
         self.disparo_actual = "disparo_laser"
 
         # Diccionario de armas del airwing
@@ -93,7 +92,7 @@ class Arwing(ObjetoJuego):
             self.velocidad_actual = self.penalizacion_velocidad
 
     def update(self, segundos_por_frame, meteoritos):
-
+        self.tiempo_ultimo_disparo += segundos_por_frame
         # Recuperar velocidad luego del impacto con meteoritos
         if self.esta_lenta:
             tiempo_actual = pygame.time.get_ticks()
@@ -161,6 +160,63 @@ class Arwing(ObjetoJuego):
         limite_superior = ALTO * 0.2
         self.rect.top = max(limite_superior, self.rect.top)
         self.rect.bottom = min(ALTO, self.rect.bottom)
+
+
+    #Decorador aplicado a funcion de disparo para generación de powerups
+    @registrar_evento("disparos")
+    def disparar(self, grupo_balas):
+        #Obtener cadencia del arma actual
+        cadencia_disparo = self.armas[self.disparo_actual]["cadencia"]
+        # Verificación de tiempo entre disparos.
+        if self.tiempo_ultimo_disparo < cadencia_disparo:
+            return
+        disparo = self.armas[self.disparo_actual]
+        vel_y = disparo["velocidad"]
+        danio = disparo["danio"]
+        ancho, alto = disparo["tamanio"]
+        cantidad = disparo["cantidad_balas"]
+        x_base = self.rect.centerx
+        y_base = self.rect.top
+        # Generar los proyectiles relacionados al arma activa.
+        if cantidad == 1:
+            bala = Proyectil(
+                x=x_base,
+                y=y_base,
+                velocidad_y=vel_y,
+                danio=danio,
+                color=disparo["color"],
+                ancho=ancho,
+                alto=alto
+            )
+            grupo_balas.add(bala)
+
+        elif cantidad == 2:
+            offset = 15 # Separación entre los disparos.
+            bala_izq = Proyectil(
+                x=x_base - offset,
+                y=y_base,
+                velocidad_y=vel_y,
+                danio=danio,
+                color=disparo["color"],
+                ancho=ancho,
+                alto=alto
+            )
+
+            bala_der = Proyectil(
+                x=x_base + offset,
+                y=y_base,
+                velocidad_y=vel_y,
+                danio=danio,
+                color=disparo["color"],
+                ancho=ancho,
+                alto=alto
+            )
+
+            grupo_balas.add(bala_izq, bala_der)
+        # 4. Reinicio del temporizador de disparo
+        self.tiempo_ultimo_disparo = 0
+
+
 
     # Método para recibir daño
     def recibir_dano(self, cantidad):
