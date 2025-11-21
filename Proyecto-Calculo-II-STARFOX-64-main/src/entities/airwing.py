@@ -4,6 +4,7 @@ import os
 from constantes import (ANCHO, ALTO, POS_INICIO_X, POS_INICIO_Y)
 from entities.Objetos_Madre import ObjetoJuego
 from entities.proyectiles import Proyectil
+from entities.Explosion import Explosion
 from decorador import registrar_evento
 
 
@@ -82,6 +83,7 @@ class Arwing(ObjetoJuego):
                 "cadencia": 0.50
             }
         }
+
 
     # metodo para aplicar la lentitud de la nave al colisionar
     def aplicar_lentitud(self):
@@ -219,4 +221,6 @@ class Arwing(ObjetoJuego):
 
     # Método para eliminar la nave
     def explotar(self):
+        explosion = Explosion(self.rect.centerx, self.rect.centery)
+        todos_los_sprites.add(explosion)
         self.kill()
