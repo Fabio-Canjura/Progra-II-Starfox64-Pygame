@@ -68,6 +68,28 @@ def crear_powerup():
     grupo_powerups.add(mejora)
     todos_los_sprites.add(mejora)
 
+# Crear la barra de vida 
+def dibujar_barra_vida(pantalla, x, y, vida, vida_maxima):
+    ancho = 100
+    alto = 10
+
+    # porcentaje de vida
+    ratio = vida / vida_maxima
+    vida_actual = int(ancho * ratio)
+
+    # color según el estado
+    if ratio > 0.6:
+        color = (0, 255, 0)      # verde
+    elif ratio > 0.3:
+        color = (255, 255, 0)    # amarillo
+    else:
+        color = (255, 0, 0)      # rojo
+
+    # borde de la barra
+    pygame.draw.rect(pantalla, (255,255,255), (x, y, ancho, alto), 1)
+    # barra de vida
+    pygame.draw.rect(pantalla, color, (x, y, vida_actual, alto))
+
 # Bucle principal de la pantalla.
 ejecutando = True
 while ejecutando:
@@ -123,6 +145,10 @@ while ejecutando:
             
     fondo_juego.dibujar_en(ventana)
     todos_los_sprites.draw(ventana)
+
+    # Dibujar la barra de vida en la esquina inferior derecha
+    dibujar_barra_vida(ventana,ANCHO - 70,ALTO - 30,arwing.salud,100)
+
     pygame.display.flip()
 
 pygame.quit()
