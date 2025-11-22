@@ -22,6 +22,7 @@ class Arwing(ObjetoJuego):
         self.velocidad_maxima = 350   # Aceleración
         self.velocidad_minima = 150    # Desaceleración
         self.potencia_aceleracion = 300 # Para acelerar paulatinamente
+        self.niveles_disparo = ["disparo_normal", "disparo_doble", "disparo_laser"] # Para intercambiar disparos al coger powerup
         # Cargar sprite del Airwing
         ruta_airwing = os.path.join("assets", "images", "player", "nave_fox.png")
         try:

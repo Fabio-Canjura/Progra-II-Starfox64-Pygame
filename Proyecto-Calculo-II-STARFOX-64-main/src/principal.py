@@ -10,8 +10,6 @@ from entities.Obstaculos import Obstaculos
 from fondo import fondo
 from entities.power_up import power_up
 from entities.meteoritos import OrquestrarMeteoritos
-
-
 import os
 
 # Iniciar Pygame
@@ -96,7 +94,6 @@ while ejecutando:
 
                 # PowerUp
                 if arwing.estadisticas.get("disparos", 0) >= 25:
-                    print("💫 PowerUp generado")
                     arwing.estadisticas["disparos"] = 0
                     crear_powerup()
 
@@ -116,6 +113,19 @@ while ejecutando:
     # Colisiones de meteoritos con nave
     if detectar_colision_nave_meteoritos(arwing, meteoritos):
         arwing.aplicar_lentitud()
+        
+    # Colisión de Arwing con powerups 
+    colision_powerups = pygame.sprite.spritecollide(arwing, grupo_powerups, True)
+    for powerup in colision_powerups:
+        if powerup.tipo == "mejora_disparo":
+            # Secuencia de cambios de mejora en los disparos. normal -> doble -> laser 
+            if arwing.disparo_actual == "disparo_normal":
+                arwing.disparo_actual = "disparo_doble"
+            elif arwing.disparo_actual == "disparo_doble":
+                arwing.disparo_actual = "disparo_laser"
+            else:
+                arwing.disparo_actual = "disparo_normal"
+
 
     # Carga de sprites en la pantalla de juego
     fondo_juego.actualizar(segundos_por_frame)

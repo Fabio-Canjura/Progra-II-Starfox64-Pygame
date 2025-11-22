@@ -14,7 +14,15 @@ class power_up(pygame.sprite.Sprite):
         self.image = pygame.Surface((25, 25))
         
         if tipo == "mejora_disparo":
-            self.image.fill((255, 215, 0))   # Dorado
+            ruta_powerup = os.path.join("assets", "images", "proyectiles", "aro_amarillo1.png")
+            try:
+                self.image = pygame.image.load(ruta_powerup).convert_alpha()
+                self.image = pygame.transform.scale(self.image, (35, 35))
+            except:
+                # Creación de placeholder en caso de falla.
+                self.image = pygame.Surface((25, 25))
+                self.image.fill((255, 215, 0))
+
         elif tipo == "escudo":
             self.image.fill((0, 150, 255))   # Azul claro
         elif tipo == "bomba":
