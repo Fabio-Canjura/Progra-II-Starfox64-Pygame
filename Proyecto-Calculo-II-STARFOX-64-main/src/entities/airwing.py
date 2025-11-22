@@ -222,5 +222,5 @@ class Arwing(ObjetoJuego):
     # Método para eliminar la nave
     def explotar(self):
         explosion = Explosion(self.rect.centerx, self.rect.centery)
-        todos_los_sprites.add(explosion)
+        #todos_los_sprites.add(explosion)
         self.kill()
