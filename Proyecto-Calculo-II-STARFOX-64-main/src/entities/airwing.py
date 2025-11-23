@@ -5,6 +5,7 @@ from constantes import (ANCHO, ALTO, POS_INICIO_X, POS_INICIO_Y)
 from entities.Objetos_Madre import ObjetoJuego
 from entities.proyectiles import Proyectil
 from entities.Explosion import Explosion
+from entities.iterador_disparos import Iterador_disparos, Iterador_disparos_inverso
 from decorador import registrar_evento
 
 
@@ -23,6 +24,7 @@ class Arwing(ObjetoJuego):
         self.velocidad_minima = 150    # Desaceleración
         self.potencia_aceleracion = 300 # Para acelerar paulatinamente
         self.niveles_disparo = ["disparo_normal", "disparo_doble", "disparo_laser"] # Para intercambiar disparos al coger powerup
+        self.indice_disparo = 0 # Indice del arma actual de la lista.
         # Cargar sprite del Airwing
         ruta_airwing = os.path.join("assets", "images", "player", "nave_fox.png")
         try:
@@ -46,7 +48,7 @@ class Arwing(ObjetoJuego):
         self.cargar_disparo = True
         self.tiempo_ultimo_disparo = 0  # Acumulador de tiempo para cálculo entre disparos 
         self.danio_disparo = 10         # Daño base del disparo
-        self.disparo_actual = "disparo_normal"
+        self.disparo_actual = self.niveles_disparo[self.indice_disparo]
 
         # Diccionario de armas del airwing
         self.armas = {
@@ -85,7 +87,6 @@ class Arwing(ObjetoJuego):
             }
         }
 
-
     # metodo para aplicar la lentitud de la nave al colisionar
     def aplicar_lentitud(self):
         if not self.esta_lenta:
@@ -104,6 +105,10 @@ class Arwing(ObjetoJuego):
 
         # Detectar colisión con meteoritos
         colisiones = pygame.sprite.spritecollide(self, meteoritos, False)
+        if colisiones:
+            self.aplicar_lentitud()
+            self.degradar_disparo()
+
         """
         # prints para detectar si hay colisiones // esto es temporal
         print("Arwing rect:", self.rect)
@@ -211,6 +216,25 @@ class Arwing(ObjetoJuego):
         self.tiempo_ultimo_disparo = 0
 
         return True  # Contar el disparo
+    
+    def mejorar_disparo(self):
+        iterador = Iterador_disparos(self.niveles_disparo, self.indice_disparo+1)
+        try:
+            self.disparo_actual = next(iterador)
+            self.indice_disparo += 1
+        except StopIteration:
+            pass  # Ya está en el nivel máximo, no hacer nada
+                
+    def degradar_disparo(self):
+        iterador = Iterador_disparos_inverso(self.niveles_disparo, self.indice_disparo - 1)
+
+        try:
+            self.disparo_actual = next(iterador)
+            self.indice_disparo -= 1
+        except StopIteration:
+            pass  # Ya está en el nivel mínimo
+
+
 
 
 
