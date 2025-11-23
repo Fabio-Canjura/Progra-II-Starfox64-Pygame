@@ -118,8 +118,7 @@ while ejecutando:
 
 
     # Colisiones de meteoritos con nave
-    if detectar_colision_nave_meteoritos(arwing, meteoritos):
-        print("COLISION!!")
+    if detectar_colision_nave_meteoritos(arwing, meteoritos) and arwing.puede_recibir_dano:
         arwing.aplicar_lentitud()
         arwing.degradar_disparo()
         

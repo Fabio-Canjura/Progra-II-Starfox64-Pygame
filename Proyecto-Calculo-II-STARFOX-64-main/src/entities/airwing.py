@@ -25,6 +25,7 @@ class Arwing(ObjetoJuego):
         self.potencia_aceleracion = 300 # Para acelerar paulatinamente
         self.niveles_disparo = ["disparo_normal", "disparo_doble", "disparo_laser"] # Para intercambiar disparos al coger powerup
         self.indice_disparo = 0 # Indice del arma actual de la lista.
+        self.puede_recibir_dano = True
         # Cargar sprite del Airwing
         ruta_airwing = os.path.join("assets", "images", "player", "nave_fox.png")
         try:
@@ -89,10 +90,13 @@ class Arwing(ObjetoJuego):
 
     # metodo para aplicar la lentitud de la nave al colisionar
     def aplicar_lentitud(self):
-        if not self.esta_lenta:
+        if not self.esta_lenta and self.puede_recibir_dano:
             self.esta_lenta = True
             self.tiempo_lentitud = pygame.time.get_ticks()
             self.velocidad_actual = self.penalizacion_velocidad
+             # Evitar múltiples daños en un solo choque
+            self.puede_recibir_dano = False
+            self.tiempo_ultima_colision = pygame.time.get_ticks()
 
     def update(self, segundos_por_frame, meteoritos):
         self.tiempo_ultimo_disparo += segundos_por_frame
@@ -102,12 +106,11 @@ class Arwing(ObjetoJuego):
             if tiempo_actual - self.tiempo_lentitud >= self.duracion_lentitud:
                 self.esta_lenta = False
                 self.velocidad_actual = self.velocidad_base
-
-        # Detectar colisión con meteoritos
-        colisiones = pygame.sprite.spritecollide(self, meteoritos, False)
-        if colisiones:
-            self.aplicar_lentitud()
-            self.degradar_disparo()
+            
+        # Recuperar capacidad de recibir daño
+        if not self.puede_recibir_dano:
+            if pygame.time.get_ticks() - self.tiempo_ultima_colision > 2000:
+                self.puede_recibir_dano = True
 
         """
         # prints para detectar si hay colisiones // esto es temporal
@@ -233,11 +236,7 @@ class Arwing(ObjetoJuego):
             self.indice_disparo -= 1
         except StopIteration:
             pass  # Ya está en el nivel mínimo
-
-
-
-
-
+            
     # Método para recibir daño
     def recibir_dano(self, cantidad):
         self.salud -= cantidad
