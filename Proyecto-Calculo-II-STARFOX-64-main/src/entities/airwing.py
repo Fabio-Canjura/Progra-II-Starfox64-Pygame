@@ -26,6 +26,9 @@ class Arwing(ObjetoJuego):
         self.niveles_disparo = ["disparo_normal", "disparo_doble", "disparo_laser"] # Para intercambiar disparos al coger powerup
         self.indice_disparo = 0 # Indice del arma actual de la lista.
         self.puede_recibir_dano = True
+        self.tiempo_invulnerabilidad = 1300  # 1.3 segundos
+        self.tiempo_parpadeo = 100 # parpadeo del airwing luego de recibir daño en milisegundos
+
         # Cargar sprite del Airwing
         ruta_airwing = os.path.join("assets", "images", "player", "nave_fox.png")
         try:
@@ -107,10 +110,24 @@ class Arwing(ObjetoJuego):
                 self.esta_lenta = False
                 self.velocidad_actual = self.velocidad_base
             
-        # Recuperar capacidad de recibir daño
+                
+        # Invulneravilidad cuando recibe daño
         if not self.puede_recibir_dano:
-            if pygame.time.get_ticks() - self.tiempo_ultima_colision > 2000:
+            tiempo = pygame.time.get_ticks() - self.tiempo_ultima_colision
+        
+            if tiempo < self.tiempo_invulnerabilidad:
+                # alterna la imagen en visible/invisible 
+                if (tiempo // self.tiempo_parpadeo) % 2 == 0:
+                    self.image.set_alpha(80)   # medio transparente
+                else:
+                    self.image.set_alpha(255)  # visible
+            else:
+                # Fin de invulnerabilidad y vuelve a recibir daño
                 self.puede_recibir_dano = True
+                self.image.set_alpha(255)
+        else:
+            # Normal sin invulnerabilidad
+            self.image.set_alpha(255)
 
         """
         # prints para detectar si hay colisiones // esto es temporal

@@ -63,7 +63,7 @@ def dibujar_barra_vida(pantalla, x, y, vida, vida_maxima):
     ratio = vida / vida_maxima
     vida_actual = int(ancho * ratio)
 
-    # color según el estado
+    # color según el estado de vida
     if ratio > 0.6:
         color = (0, 255, 0)      # verde
     elif ratio > 0.3:
