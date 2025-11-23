@@ -173,7 +173,7 @@ class Arwing(ObjetoJuego):
 
         # Si no ha pasado el tiempo suficiente no se dispara
         if self.tiempo_ultimo_disparo < cadencia:
-            return False   # NO contamos el disparo (evento)
+            return False   # NO contamos el disparo 
 
         disparo = self.armas[self.disparo_actual]
 

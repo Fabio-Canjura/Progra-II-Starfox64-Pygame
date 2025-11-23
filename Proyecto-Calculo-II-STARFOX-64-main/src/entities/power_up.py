@@ -14,7 +14,7 @@ class power_up(pygame.sprite.Sprite):
         self.image = pygame.Surface((25, 25))
         
         if tipo == "mejora_disparo":
-            ruta_powerup = os.path.join("assets", "images", "proyectiles", "aro_amarillo1.png")
+            ruta_powerup = os.path.join("assets", "images", "Proyectiles", "aro_amarillo1.png")
             try:
                 self.image = pygame.image.load(ruta_powerup).convert_alpha()
                 self.image = pygame.transform.scale(self.image, (35, 35))
