@@ -10,6 +10,8 @@ from entities.Obstaculos import Obstaculos
 from fondo import fondo
 from entities.power_up import power_up
 from entities.meteoritos import OrquestrarMeteoritos
+from Recursiva import contar_meteoritos
+
 import os
 
 # Iniciar Pygame
@@ -102,6 +104,10 @@ while ejecutando:
     if nuevo_meteorito:
         meteoritos.add(nuevo_meteorito)
         todos_los_sprites.add(nuevo_meteorito)
+
+    # FUNCIÓN RECURSIVA: contar meteoritos
+    cantidad = contar_meteoritos(list(meteoritos))
+    print("Meteoritos en pantalla (recursivo):", cantidad)    
 
     # Actualización general de los elementos en pantalla
     arwing.update(segundos_por_frame, meteoritos)
