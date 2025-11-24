@@ -53,6 +53,12 @@ class Arwing(ObjetoJuego):
         self.tiempo_ultimo_disparo = 0  # Acumulador de tiempo para cálculo entre disparos 
         self.danio_disparo = 10         # Daño base del disparo
         self.disparo_actual = self.niveles_disparo[self.indice_disparo]
+        
+        # Lambdas para acelerar y desacelerar
+        self.acelerar = lambda velocidad, segundos_por_frame: min(velocidad + self.potencia_aceleracion * segundos_por_frame, self.velocidad_maxima)
+
+        self.desacelerar = lambda velocidad, segundos_por_frame: max(velocidad - self.potencia_aceleracion * segundos_por_frame, self.velocidad_minima)
+
 
         # Diccionario de armas del airwing
         self.armas = {
@@ -128,17 +134,6 @@ class Arwing(ObjetoJuego):
         else:
             # Normal sin invulnerabilidad
             self.image.set_alpha(255)
-
-        """
-        # prints para detectar si hay colisiones // esto es temporal
-        print("Arwing rect:", self.rect)
-        for m in meteoritos:
-            print("Meteorito rect:", m.rect)
-
-        if colisiones:
-            print("///  COLISIÓN DETECTADA!")
-            self.aplicar_lentitud()
-        """
         
         # Mover nave
         self.mover(segundos_por_frame)           
@@ -150,14 +145,10 @@ class Arwing(ObjetoJuego):
 
         # Acelerar tecla A
         if keys[pygame.K_a]:
-            self.velocidad_actual += self.potencia_aceleracion * segundos_por_frame
-            if self.velocidad_actual > self.velocidad_maxima:
-                self.velocidad_actual = self.velocidad_maxima
+            self.velocidad_actual = self.acelerar(self.velocidad_actual, segundos_por_frame)
         # Descelerar tecla D
         elif keys[pygame.K_d]:
-            self.velocidad_actual -= self.potencia_aceleracion * segundos_por_frame
-            if self.velocidad_actual < self.velocidad_minima:
-                self.velocidad_actual = self.velocidad_minima
+            self.velocidad_actual = self.desacelerar(self.velocidad_actual, segundos_por_frame)
         # Velocidad base si no se pulsa ningun boton
         else:
             if self.velocidad_actual > self.velocidad_base:

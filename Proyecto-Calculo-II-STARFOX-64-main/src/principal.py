@@ -126,14 +126,13 @@ while ejecutando:
     for powerup in colision_powerups:
         if powerup.tipo == "mejora_disparo":
             arwing.mejorar_disparo()
-    # colision de balas, arwing recibe dano
-            
+    
+    # colision de balas, arwing recibe dano        
     colision_balas_enemigas = pygame.sprite.spritecollide(arwing, grupo_balas_enemigo, True)
     for bala in colision_balas_enemigas:
         arwing.recibir_dano(bala.danio)            
 
     # colision de balas, enemigo recibe dano
-
     colision_balas_jugador = pygame.sprite.spritecollide(enemigo, grupo_balas_arwing, True)
     for bala in colision_balas_jugador:
         try:
