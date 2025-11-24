@@ -26,7 +26,10 @@ fondo_juego = fondo(ruta_imagen=ruta_fondo, velocidad=120)
 
 # Agrupar los Sprites a dibujar
 todos_los_sprites = pygame.sprite.Group()
-grupo_balas = pygame.sprite.Group()
+grupo_balas_arwing = pygame.sprite.Group()
+grupo_balas_enemigo = pygame.sprite.Group()
+grupo_enemigos = pygame.sprite.Group()
+
 
 # Creación de nave Airwing
 arwing = Arwing()
@@ -40,6 +43,7 @@ meteoritos = pygame.sprite.Group()
 grupo_powerups = pygame.sprite.Group()
 
 # Creacion de nave enemiga
+
 ruta_imagen_enemigo = os.path.join("assets", "images", "enemies", "Enemigo_rojo_no_fondo.png")
 enemigo = Enemigos(ruta_imagen=ruta_imagen_enemigo, pos_x= 100, pos_y= 50, velocidad=5)  
 todos_los_sprites.add(enemigo)
@@ -89,8 +93,8 @@ while ejecutando:
 
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                resultado = arwing.disparar(grupo_balas)
-                for bala in grupo_balas:
+                resultado = arwing.disparar(grupo_balas_arwing)
+                for bala in grupo_balas_arwing:
                     if bala not in todos_los_sprites:
                         todos_los_sprites.add(bala)
 
@@ -105,15 +109,16 @@ while ejecutando:
         meteoritos.add(nuevo_meteorito)
         todos_los_sprites.add(nuevo_meteorito)
 
-    # FUNCIÓN RECURSIVA: contar meteoritos
+    # funcion recursiva para contar meteoritos
     cantidad = contar_meteoritos(list(meteoritos))
     print("Meteoritos en pantalla (recursivo):", cantidad)    
 
     # Actualización general de los elementos en pantalla
     arwing.update(segundos_por_frame, meteoritos)
     meteoritos.update(segundos_por_frame)
-    grupo_balas.update(segundos_por_frame)
-    enemigo.update(segundos_por_frame)
+    grupo_balas_arwing.update(segundos_por_frame)
+    grupo_balas_enemigo.update(segundos_por_frame)
+    enemigo.update(segundos_por_frame, grupo_balas_enemigo)
     grupo_powerups.update(segundos_por_frame)
     
     # Colisión de Arwing con powerups para mejora disparo
@@ -121,6 +126,24 @@ while ejecutando:
     for powerup in colision_powerups:
         if powerup.tipo == "mejora_disparo":
             arwing.mejorar_disparo()
+    # colision de balas, arwing recibe dano
+            
+    colision_balas_enemigas = pygame.sprite.spritecollide(arwing, grupo_balas_enemigo, True)
+    for bala in colision_balas_enemigas:
+        arwing.recibir_dano(bala.danio)            
+
+    # colision de balas, enemigo recibe dano
+
+    colision_balas_jugador = pygame.sprite.spritecollide(enemigo, grupo_balas_arwing, True)
+    for bala in colision_balas_jugador:
+        try:
+            enemigo.recibir_dano(bala.danio)
+        except:
+            pass
+
+    # si el enemigo murio no dispara mas
+    if not enemigo.alive():
+        grupo_balas_enemigo.empty()  
 
 
     # Colisiones de meteoritos con nave
@@ -133,8 +156,11 @@ while ejecutando:
     fondo_juego.dibujar_en(ventana)
 
     todos_los_sprites.draw(ventana)
+    grupo_balas_arwing.draw(ventana)
+    grupo_balas_enemigo.draw(ventana)
     dibujar_barra_vida(ventana, ANCHO - 70, ALTO - 30, arwing.salud, 100)
 
     pygame.display.flip()
 
 pygame.quit()
+ 
