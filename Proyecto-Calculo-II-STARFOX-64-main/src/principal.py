@@ -86,14 +86,14 @@ def dibujar_barra_vida(pantalla, x, y, vida, vida_maxima):
 def reproducir_musica_inicio():
     ruta_musica = os.path.join("assets", "audio","Fondos audio", "StarFox_title_ost.mp3")
     pygame.mixer.music.load(ruta_musica)
-    pygame.mixer.music.play(-1)  # -1 = loop infinito
+    pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.6)
 
 def reproducir_musica_juego():
     ruta_musica = os.path.join("assets", "audio","Fondos audio", "StarFox_ost_theme.mp3")
     pygame.mixer.music.load(ruta_musica)
-    pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.6)
+    pygame.mixer.music.set_endevent(pygame.USEREVENT + 1)
 
 # funcion recursiva que mantiene la musica sonando
 def reproducir_musica_recursiva():
@@ -103,11 +103,10 @@ def reproducir_musica_recursiva():
     pygame.mixer.music.play()
 
     # Cuando termine, llamamos otra vez la función
-    # Usamos un evento de pygame para detectar fin del audio
     pygame.mixer.music.set_endevent(pygame.USEREVENT + 1)
 
-# Metodo para crear la pantalla de inicio
 
+# Metodo para crear la pantalla de inicio
 def pantalla_inicio():
     ejecutando_inicio = True
 
