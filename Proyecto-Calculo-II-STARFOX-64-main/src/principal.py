@@ -10,16 +10,17 @@ from entities.Obstaculos import Obstaculos
 from fondo import fondo
 from entities.power_up import power_up
 from entities.meteoritos import OrquestrarMeteoritos
-from Recursiva import contar_meteoritos
+
 
 import os
 
 # Iniciar Pygame
 pygame.init()
+pygame.mixer.init() #Iniciar ost del juego
 ventana = pygame.display.set_mode((ANCHO, ALTO))
 pygame.display.set_caption("StarFox 2D")
 clock = pygame.time.Clock()
- 
+
 #Creación del fondo y dibujar en ventana
 ruta_fondo = os.path.join("assets", "images", "backgrounds", "Espacio_exterior_1.png")
 fondo_juego = fondo(ruta_imagen=ruta_fondo, velocidad=120)
@@ -82,7 +83,80 @@ def dibujar_barra_vida(pantalla, x, y, vida, vida_maxima):
     # barra de vida
     pygame.draw.rect(pantalla, color, (x, y, vida_actual, alto))
 
-# Bucle principal de la pantalla.
+def reproducir_musica_inicio():
+    ruta_musica = os.path.join("assets", "audio","Fondos audio", "StarFox_title_ost.mp3")
+    pygame.mixer.music.load(ruta_musica)
+    pygame.mixer.music.play(-1)  # -1 = loop infinito
+    pygame.mixer.music.set_volume(0.6)
+
+def reproducir_musica_juego():
+    ruta_musica = os.path.join("assets", "audio","Fondos audio", "StarFox_ost_theme.mp3")
+    pygame.mixer.music.load(ruta_musica)
+    pygame.mixer.music.play(-1)
+    pygame.mixer.music.set_volume(0.6)
+
+# funcion recursiva que mantiene la musica sonando
+def reproducir_musica_recursiva():
+    ruta_musica = os.path.join("assets", "audio","Fondos audio", "StarFox_ost_theme.mp3")
+
+    pygame.mixer.music.load(ruta_musica)
+    pygame.mixer.music.play()
+
+    # Cuando termine, llamamos otra vez la función
+    # Usamos un evento de pygame para detectar fin del audio
+    pygame.mixer.music.set_endevent(pygame.USEREVENT + 1)
+
+# Metodo para crear la pantalla de inicio
+
+def pantalla_inicio():
+    ejecutando_inicio = True
+
+    # Cargar fondo de pantalla de inicio
+    ruta_fondo_start = os.path.join("assets", "images", "backgrounds", "pantalla_inicio_1.png")
+
+    try:
+        fondo_start = pygame.image.load(ruta_fondo_start)
+        fondo_start = pygame.transform.scale(fondo_start, (ANCHO, ALTO))
+    except:
+        
+        fondo_start = pygame.Surface((ANCHO, ALTO))
+        fondo_start.fill((0, 0, 50))
+
+    # Fuente del texto 
+    fuente = pygame.font.Font(None, 48) 
+
+    while ejecutando_inicio:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    ejecutando_inicio = False
+
+        # Dibujar fondo
+        ventana.blit(fondo_start, (0, 0))
+
+        
+        texto = fuente.render("PRESIONA ENTER PARA INICIAR", True, (255, 255, 255))
+
+        texto_rect = texto.get_rect(center=(ANCHO // 2, int(ALTO * 0.80)))
+        ventana.blit(texto, texto_rect)
+
+        pygame.display.update()
+
+# activar musica pantalla de inicio
+reproducir_musica_inicio()
+
+# llamar a la pantalla de inicio
+pantalla_inicio()
+
+# reproducir recursiva 
+reproducir_musica_recursiva()
+
+
+# Bucle principal del juego.
 ejecutando = True
 while ejecutando:
     segundos_por_frame = clock.tick(FPS) / 1000
@@ -90,6 +164,10 @@ while ejecutando:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             ejecutando = False
+
+        #  repetir la música cuando termina con la recursiva
+        if event.type == pygame.USEREVENT + 1:
+            reproducir_musica_recursiva()    
 
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
@@ -108,11 +186,7 @@ while ejecutando:
     if nuevo_meteorito:
         meteoritos.add(nuevo_meteorito)
         todos_los_sprites.add(nuevo_meteorito)
-
-    # funcion recursiva para contar meteoritos
-    cantidad = contar_meteoritos(list(meteoritos))
-    print("Meteoritos en pantalla (recursivo):", cantidad)    
-
+ 
     # Actualización general de los elementos en pantalla
     arwing.update(segundos_por_frame, meteoritos)
     meteoritos.update(segundos_por_frame)
