@@ -10,6 +10,7 @@ from entities.Obstaculos import Obstaculos
 from fondo import fondo
 from entities.power_up import power_up
 from entities.meteoritos import OrquestrarMeteoritos
+from Recursiva import contar_recursivo
 
 
 import os
@@ -48,6 +49,8 @@ grupo_powerups = pygame.sprite.Group()
 ruta_imagen_enemigo = os.path.join("assets", "images", "enemies", "Enemigo_rojo_no_fondo.png")
 enemigo = Enemigos(ruta_imagen=ruta_imagen_enemigo, pos_x= 100, pos_y= 50, velocidad=5)  
 todos_los_sprites.add(enemigo)
+grupo_enemigos.add(enemigo)
+
 
 # Metodo para detectar la colision de la nave
 def detectar_colision_nave_meteoritos(nave, grupo_meteoritos):
@@ -90,21 +93,11 @@ def reproducir_musica_inicio():
     pygame.mixer.music.set_volume(0.6)
 
 def reproducir_musica_juego():
-    ruta_musica = os.path.join("assets", "audio","Fondos audio", "StarFox_ost_theme.mp3")
+    ruta_musica = os.path.join("assets", "audio","Fondos audio", "space_sound.mp3")
     pygame.mixer.music.load(ruta_musica)
+    pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.6)
-    pygame.mixer.music.set_endevent(pygame.USEREVENT + 1)
-
-# funcion recursiva que mantiene la musica sonando
-def reproducir_musica_recursiva():
-    ruta_musica = os.path.join("assets", "audio","Fondos audio", "StarFox_ost_theme.mp3")
-
-    pygame.mixer.music.load(ruta_musica)
-    pygame.mixer.music.play()
-
-    # Cuando termine, llamamos otra vez la función
-    pygame.mixer.music.set_endevent(pygame.USEREVENT + 1)
-
+    
 
 # Metodo para crear la pantalla de inicio
 def pantalla_inicio():
@@ -151,8 +144,11 @@ reproducir_musica_inicio()
 # llamar a la pantalla de inicio
 pantalla_inicio()
 
-# reproducir recursiva 
-reproducir_musica_recursiva()
+# Cambiar música a la del juego
+ruta = os.path.join("assets", "audio","Fondos audio", "space_sound.mp3")
+pygame.mixer.music.load(ruta)
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.6)
 
 
 # Bucle principal del juego.
@@ -162,11 +158,7 @@ while ejecutando:
     # Eventos del juego
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            ejecutando = False
-
-        #  repetir la música cuando termina con la recursiva
-        if event.type == pygame.USEREVENT + 1:
-            reproducir_musica_recursiva()    
+            ejecutando = False  
 
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
@@ -193,6 +185,11 @@ while ejecutando:
     grupo_balas_enemigo.update(segundos_por_frame)
     enemigo.update(segundos_por_frame, grupo_balas_enemigo)
     grupo_powerups.update(segundos_por_frame)
+
+    # Conteo recursivo de meteoritos y enemigos en pantalla
+    cantidad_meteoritos = contar_recursivo(list(meteoritos))
+    cantidad_enemigos = contar_recursivo(list(grupo_enemigos))
+
     
     # Colisión de Arwing con powerups para mejora disparo
     colision_powerups = pygame.sprite.spritecollide(arwing, grupo_powerups, True)
@@ -230,7 +227,18 @@ while ejecutando:
     todos_los_sprites.draw(ventana)
     grupo_balas_arwing.draw(ventana)
     grupo_balas_enemigo.draw(ventana)
+    # barra de vida
     dibujar_barra_vida(ventana, ANCHO - 70, ALTO - 30, arwing.salud, 100)
+    #fuente de texto
+    fuente = pygame.font.Font(None, 26)
+
+    # mostrar meteoritos en pantalla
+    texto_mete = fuente.render(f"Meteoritos: {cantidad_meteoritos}", True, (255, 255, 255))
+    ventana.blit(texto_mete, (10, 10))
+
+    # mostrar enemigos en pantalla
+    texto_enem = fuente.render(f"Enemigos: {cantidad_enemigos}", True, (255, 255, 255))
+    ventana.blit(texto_enem, (10, 40))
 
     pygame.display.flip()
 
