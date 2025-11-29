@@ -24,6 +24,8 @@ class Arwing(ObjetoJuego):
         self.velocidad_minima = 150    # Desaceleración
         self.potencia_aceleracion = 300 # Para acelerar paulatinamente
         self.niveles_disparo = ["disparo_normal", "disparo_doble", "disparo_laser"] # Para intercambiar disparos al coger powerup
+        self.delegados_disparo = {"disparo_normal": self.disparo_normal,"disparo_doble": self.disparo_doble,"disparo_laser": self.disparo_laser,}
+
         self.indice_disparo = 0 # Indice del arma actual de la lista.
         self.puede_recibir_dano = True
         self.tiempo_invulnerabilidad = 1300  # 1.3 segundos
@@ -181,51 +183,60 @@ class Arwing(ObjetoJuego):
         self.rect.bottom = min(ALTO, self.rect.bottom)
 
 
+    def crear_bala(self, pos_x, pos_y, arma):
+        color = arma["color"]
+        velocidad_y = arma["velocidad"]
+        danio = arma["danio"]
+        ancho, alto = arma["tamanio"]
+        bala = Proyectil(
+                x=pos_x,
+                y=pos_y,
+                velocidad_y=velocidad_y,
+                danio=danio,
+                color=color,
+                ancho=ancho,
+                alto=alto
+            )
+        return bala
+
+
+    def disparo_normal(self, pos_disparo_x, pos_disparo_y):
+        arma = self.armas["disparo_normal"]
+        bala = self.crear_bala(pos_disparo_x, pos_disparo_y, arma)
+        return [bala] 
+    
+    def disparo_laser(self, pos_disparo_x, pos_disparo_y):
+        arma = self.armas["disparo_laser"]
+        bala = self.crear_bala(pos_disparo_x, pos_disparo_y, arma)
+        return [bala] 
+    
+    def disparo_doble(self, pos_disparo_x, pos_disparo_y):
+        arma = self.armas["disparo_doble"]
+        offset = 15 # Separación horizontal de las balas
+        bala1 = self.crear_bala(pos_disparo_x - offset, pos_disparo_y, arma)
+        bala2 = self.crear_bala(pos_disparo_x + offset, pos_disparo_y, arma)
+        return [bala1, bala2]  # lista con dos balas
+
     #Decorador aplicado a funcion de disparo para generación de powerups
     @registrar_evento("disparos")
     def disparar(self, grupo_balas):
-
         cadencia = self.armas[self.disparo_actual]["cadencia"]
 
         # Si no ha pasado el tiempo suficiente no se dispara
         if self.tiempo_ultimo_disparo < cadencia:
             return False   # NO contamos el disparo 
 
-        disparo = self.armas[self.disparo_actual]
-
-        vel_y = disparo["velocidad"]
-        danio = disparo["danio"]
-        ancho, alto = disparo["tamanio"]
-        cantidad = disparo["cantidad_balas"]
-
-        x_base = self.rect.centerx
-        y_base = self.rect.top
-
-        if cantidad == 1:
-            bala = Proyectil(
-                x=x_base, y=y_base,
-                velocidad_y=vel_y, danio=danio,
-                color=disparo["color"], ancho=ancho, alto=alto
-            )
-            grupo_balas.add(bala)
-
-        elif cantidad == 2:
-            offset = 15
-            bala_izq = Proyectil(
-                x=x_base - offset, y=y_base,
-                velocidad_y=vel_y, danio=danio,
-                color=disparo["color"], ancho=ancho, alto=alto
-            )
-            bala_der = Proyectil(
-                x=x_base + offset, y=y_base,
-                velocidad_y=vel_y, danio=danio,
-                color=disparo["color"], ancho=ancho, alto=alto
-            )
-            grupo_balas.add(bala_izq, bala_der)
-
-        # Reiniciar el temporizador
+        pos_disparo_x = self.rect.centerx
+        pos_disparo_y = self.rect.top
+    
+        delegado = self.delegados_disparo[self.disparo_actual]
+        balas_generadas = delegado(pos_disparo_x, pos_disparo_y)
+    
+        for bala in balas_generadas:
+                grupo_balas.add(bala)
+    
+        # Reiniciar el temporizador de disparo
         self.tiempo_ultimo_disparo = 0
-
         return True  # Contar el disparo
     
     def mejorar_disparo(self):

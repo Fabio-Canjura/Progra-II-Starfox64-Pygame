@@ -59,7 +59,7 @@ def detectar_colision_nave_meteoritos(nave, grupo_meteoritos):
         return True
     return False
 
-def crear_powerup():
+def crear_powerup(): 
     mejora = power_up(tipo="mejora_disparo")
     grupo_powerups.add(mejora)
     todos_los_sprites.add(mejora)
