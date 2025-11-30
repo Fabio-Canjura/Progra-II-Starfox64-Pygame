@@ -87,15 +87,6 @@ class Arwing(ObjetoJuego):
                 "tamanio": (7, 22),
                 "cantidad_balas": 1,
                 "cadencia": 0.40
-            },
-            "disparo_cargado": {
-                "color": (0, 255, 100),  # Bomba verde al cargar
-                "velocidad": -500,
-                "danio": 40,
-                "tamanio": (4, 45),
-                "explosion_radio": 50,
-                "cantidad_balas": 1,
-                "cadencia": 0.50
             }
         }
 
@@ -198,7 +189,6 @@ class Arwing(ObjetoJuego):
                 alto=alto
             )
         return bala
-
 
     def disparo_normal(self, pos_disparo_x, pos_disparo_y):
         arma = self.armas["disparo_normal"]
