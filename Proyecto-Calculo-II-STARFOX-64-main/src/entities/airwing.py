@@ -249,7 +249,6 @@ class Arwing(ObjetoJuego):
                 
     def degradar_disparo(self):
         iterador = Iterador_disparos_inverso(self.niveles_disparo, self.indice_disparo - 1)
-
         try:
             self.disparo_actual = next(iterador)
             self.indice_disparo -= 1
@@ -258,9 +257,24 @@ class Arwing(ObjetoJuego):
             
     # Método para recibir daño
     def recibir_dano(self, cantidad):
+        # si está en invulnerabilidad, ignorar el daño
+        if not self.puede_recibir_dano:
+            return
+
+        # Aplicar daño a la salud
         self.salud -= cantidad
+    
+        # Degradar disparo al recibir daño
+        self.degradar_disparo()
+    
+        # Activar invulnerabilidad y parpadeo
+        self.puede_recibir_dano = False
+        self.tiempo_ultima_colision = pygame.time.get_ticks()
+    
+        # Si muere, explota
         if self.salud <= 0:
             self.explotar()
+
 
     # Método para eliminar la nave
     def explotar(self):

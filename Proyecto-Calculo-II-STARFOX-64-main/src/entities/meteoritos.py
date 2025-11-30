@@ -1,22 +1,21 @@
-import random
+import pygame
 import os
-from entities.Obstaculos import Obstaculos
-from constantes import ANCHO
+from entities.Entidad_hostil import EntidadHostil
 
-class OrquestrarMeteoritos:
+class Meteorito(EntidadHostil):
+    def __init__(self, pos_x, pos_y, velocidad):
+        
+        self.tipo = "meteorito"
+        ruta_meteoritos = os.path.join("assets", "images", "enemies", "Asteroid_2_minerals.png")
+        imagen = pygame.image.load(ruta_meteoritos).convert_alpha()
+        imagen = pygame.transform.scale(imagen, (45, 45))
 
-    def __init__(self):
-        self.ruta_meteorito = os.path.join("assets", "images", "enemies", "Asteroid_2_minerals.png")
-        self.generador = self.generador_meteoritos()
-
-    # Función generadora de meteoritos
-    def generador_meteoritos(self):
-        while True:
-            meteorito = Obstaculos(pos_x=random.randint(0, ANCHO - 40),pos_y=-40,velocidad=random.randint(2, 5),ruta_imagen=self.ruta_meteorito)
-            yield meteorito 
-
-    #
-    def intentar_generar(self, probabilidad=0.02):
-        if random.random() < probabilidad:
-            return next(self.generador)
-        return None
+        super().__init__(
+            pos_x=pos_x,
+            pos_y=pos_y,
+            velocidad_y=velocidad,
+            danio=25,
+            vida=30,
+            imagen=imagen,
+            usar_movimiento_base=True  # El meteorito cae recto en eje y
+        )
