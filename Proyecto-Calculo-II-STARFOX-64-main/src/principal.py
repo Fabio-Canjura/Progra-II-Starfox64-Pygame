@@ -14,6 +14,8 @@ from entities.Orquestrador_hostiles import OrquestadorHostiles
 from fondo import fondo
 from entities.power_up import power_up
 from Recursiva import contar_recursivo
+from entities.Logros import SistemaLogros
+
 
 # Iniciar Pygame
 pygame.init()
@@ -35,8 +37,11 @@ grupo_balas_enemigo = pygame.sprite.Group()
 meteoritos = pygame.sprite.Group()
 grupo_enemigos = pygame.sprite.Group()
 
+# Crear sistema de logros
+sistema_logros = SistemaLogros()
+
 # Creación de nave Airwing
-arwing = Arwing()
+arwing = Arwing(sistema_logros) # agregar los logros al arwing
 todos_los_sprites.add(arwing)
 
 # Lista de enemigos del nivel
@@ -129,6 +134,9 @@ pantalla_inicio()
 # Cambiar música a la del juego
 reproducir_musica_juego()
 
+# Contador de meteoritos eliminados para el sistema de logros
+meteoritos_destruidos = 0
+
 # Bucle principal del juego.
 ejecutando = True
 while ejecutando:
@@ -140,6 +148,10 @@ while ejecutando:
             ejecutando = False
 
         elif event.type == pygame.KEYDOWN:
+            # obtener logro al disparar
+            if event.key == pygame.K_SPACE:
+                sistema_logros.activar("primer_disparo")
+
             if event.key == pygame.K_SPACE:
                 resultado = arwing.disparar(grupo_balas_arwing)
                 for bala in grupo_balas_arwing:
@@ -177,6 +189,7 @@ while ejecutando:
     colision_powerups = pygame.sprite.spritecollide(arwing, grupo_powerups, True)
     for power in colision_powerups:
         if power.tipo == "mejora_disparo":
+            sistema_logros.activar("potenciado") # logro por tomar primer powerup
             arwing.mejorar_disparo()
 
     
@@ -186,6 +199,19 @@ while ejecutando:
         colision_balas = pygame.sprite.spritecollide(hostil, grupo_balas_arwing, True)
         for bala in colision_balas:
             hostil.recibir_dano(bala.danio)
+
+        # si de destruye el enemigo o meteorito
+        if hostil.vida <= 0:
+
+            # Logro primer enemigo eliminado
+            if hostil.tipo == "enemigo":
+                sistema_logros.activar("primer_kill")
+
+            # Logro cazador de meteoritos (3 eliminados)
+            if hostil.tipo == "meteorito":
+                meteoritos_destruidos += 1
+                if meteoritos_destruidos == 3:
+                    sistema_logros.activar("cazador_meteoritos")
     
     # Balas enemigas dañan al Arwing
     colision_balas_enemigas = pygame.sprite.spritecollide(arwing, grupo_balas_enemigo, True)
@@ -218,6 +244,10 @@ while ejecutando:
     # mostrar enemigos en pantalla
     texto_enem = fuente.render(f"Enemigos: {cantidad_enemigos}", True, (255, 255, 255))
     ventana.blit(texto_enem, (10, 40))
+
+    # dibujar logros en pantalla
+    sistema_logros.dibujar(ventana, fuente, ANCHO)
+    
 
     pygame.display.flip()
 

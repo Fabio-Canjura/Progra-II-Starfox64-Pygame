@@ -11,9 +11,10 @@ from decorador import registrar_evento
 
 class Arwing(ObjetoJuego):
 
-    def __init__(self):
+    def __init__(self, sistema_logros):
         # Llamamos al constructor de la clase base
         super().__init__(pos_x=POS_INICIO_X, pos_y=POS_INICIO_Y)
+        self.sistema_logros = sistema_logros
         # Configuraciones del Airwing
         self.disparos_para_powerup = 25 # Cantidad de disparos para generar un objeto powerup
         self.estadisticas = {}
@@ -27,6 +28,10 @@ class Arwing(ObjetoJuego):
         self.delegados_disparo = {"disparo_normal": self.disparo_normal,"disparo_doble": self.disparo_doble,"disparo_laser": self.disparo_laser,}
 
         self.indice_disparo = 0 # Indice del arma actual de la lista.
+        self.armas_usadas = set()        # inicializa el set
+        self.disparo_actual = self.niveles_disparo[self.indice_disparo]
+        self.armas_usadas.add(self.disparo_actual)  # agrega el arma inicial
+        
         self.puede_recibir_dano = True
         self.tiempo_invulnerabilidad = 1300  # 1.3 segundos
         self.tiempo_parpadeo = 100 # parpadeo del airwing luego de recibir daño en milisegundos
@@ -234,6 +239,7 @@ class Arwing(ObjetoJuego):
         try:
             self.disparo_actual = next(iterador)
             self.indice_disparo += 1
+
         except StopIteration:
             pass  # Ya está en el nivel máximo, no hacer nada
                 
@@ -242,6 +248,10 @@ class Arwing(ObjetoJuego):
         try:
             self.disparo_actual = next(iterador)
             self.indice_disparo -= 1
+
+            # registrar arma usada
+            self.armas_usadas.add(self.disparo_actual)
+
         except StopIteration:
             pass  # Ya está en el nivel mínimo
             
