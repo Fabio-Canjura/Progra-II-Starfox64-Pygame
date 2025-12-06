@@ -2,13 +2,10 @@
 
 # Imports necesarios para la conexión entre clases
 import pygame
-import random
 import os
 
-from constantes import ANCHO, ALTO, FPS, NEGRO
+from constantes import ANCHO, ALTO, FPS
 from entities.airwing import Arwing
-from entities.Enemigos import Enemigos
-from entities.meteoritos import Meteorito
 from entities.Orquestrador_hostiles import OrquestadorHostiles
 
 from fondo import fondo
@@ -44,9 +41,8 @@ sistema_logros = SistemaLogros()
 arwing = Arwing(sistema_logros) # agregar los logros al arwing
 todos_los_sprites.add(arwing)
 
-# Lista de enemigos del nivel
-lista_hostiles = [Meteorito, Enemigos, Enemigos, Meteorito, Meteorito]
-orquestador = OrquestadorHostiles(lista_hostiles)
+# Creación del orquestrador del nivel
+orquestador = OrquestadorHostiles(grupo_enemigos)
 
 # Creación de powerups
 grupo_powerups = pygame.sprite.Group()
@@ -223,6 +219,21 @@ while ejecutando:
         if pygame.sprite.collide_rect(arwing, hostil):
             hostil.colisionar_con_arwing(arwing)
 
+
+    # Detectar fin de la oleada.
+    if orquestador.oleada_actual < len(orquestador.oleadas):
+
+        config_actual = orquestador.oleadas[orquestador.oleada_actual]
+
+        if orquestador.enemigos_generados == config_actual["enemigos"] and len(grupo_enemigos) == 0:
+            print(f"--- OLEADA {orquestador.oleada_actual + 1} COMPLETADA — PASANDO A SIGUIENTE ---")
+            orquestador.oleada_actual += 1
+            
+            # Resetear contadores para la nueva oleada
+            orquestador.enemigos_generados = 0
+            orquestador.ultimo_meteorito = pygame.time.get_ticks()
+
+    
     # Carga de sprites en la pantalla de juego
     fondo_juego.actualizar(segundos_por_frame)
     fondo_juego.dibujar_en(ventana)
