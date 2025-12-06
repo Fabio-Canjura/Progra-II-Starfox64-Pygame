@@ -18,7 +18,7 @@ from entities.Logros import SistemaLogros
 pygame.init()
 pygame.mixer.init()  # Iniciar ost del juego
 ventana = pygame.display.set_mode((ANCHO, ALTO))
-pygame.display.set_caption("StarFox 2D")
+pygame.display.set_caption("Programación II StarFox 2D")
 clock = pygame.time.Clock()
 
 # Creación del fondo y dibujar en ventana
@@ -48,7 +48,7 @@ orquestador = OrquestadorHostiles(grupo_enemigos)
 grupo_powerups = pygame.sprite.Group()
 
 def crear_powerup():
-    mejora = power_up(tipo="mejora_disparo")
+    mejora = power_up()
     grupo_powerups.add(mejora)
     todos_los_sprites.add(mejora)
 
@@ -170,7 +170,7 @@ while ejecutando:
 
 
     # Actualización general de los elementos en pantalla
-    arwing.update(segundos_por_frame, meteoritos)
+    arwing.update(segundos_por_frame)
     grupo_enemigos.update(segundos_por_frame, grupo_balas_enemigo)
     meteoritos.update(segundos_por_frame)
     grupo_balas_arwing.update(segundos_por_frame)
@@ -184,9 +184,8 @@ while ejecutando:
     # Colisión de Arwing con powerups para mejora disparo
     colision_powerups = pygame.sprite.spritecollide(arwing, grupo_powerups, True)
     for power in colision_powerups:
-        if power.tipo == "mejora_disparo":
-            sistema_logros.activar("potenciado") # logro por tomar primer powerup
-            arwing.mejorar_disparo()
+        sistema_logros.activar("potenciado") # logro por tomar primer powerup
+        arwing.mejorar_disparo()
 
     
     # Sistema de colisiones
@@ -213,6 +212,10 @@ while ejecutando:
     colision_balas_enemigas = pygame.sprite.spritecollide(arwing, grupo_balas_enemigo, True)
     for bala in colision_balas_enemigas:
         arwing.recibir_dano(bala.danio)
+    # Si la salud llega a 0 → Explosión
+    if arwing.salud <= 0:
+        arwing.muerto = True
+        arwing.explotar(todos_los_sprites)
     
     # Colisiones directas Arwing
     for hostil in list(meteoritos) + list(grupo_enemigos):

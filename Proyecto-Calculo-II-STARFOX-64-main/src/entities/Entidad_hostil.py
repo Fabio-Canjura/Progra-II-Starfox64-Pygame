@@ -15,7 +15,7 @@ class EntidadHostil(pygame.sprite.Sprite):
 
         self.usar_movimiento_base = usar_movimiento_base
 
-    def update(self, segundos_por_frame, grupo_balas_enemigo=None):
+    def update(self, segundos_por_frame):
         if self.usar_movimiento_base:
             self.rect.y += self.velocidad_y * segundos_por_frame * 60
     
@@ -30,7 +30,6 @@ class EntidadHostil(pygame.sprite.Sprite):
     def colisionar_con_arwing(self, arwing):
         arwing.recibir_dano(self.danio)
         arwing.aplicar_lentitud()
-        arwing.degradar_disparo()
         self.morir()
 
     def morir(self):

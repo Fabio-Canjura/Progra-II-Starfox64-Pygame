@@ -1,4 +1,4 @@
-# Función recursiva para contar sprites
+# Función recursiva para contar sprites activos en pantalla (enemigos)
 def contar_recursivo(lista_sprites):
     if not lista_sprites:
         return 0

@@ -2,18 +2,17 @@
 import pygame
 import os
 from constantes import (ANCHO, ALTO, POS_INICIO_X, POS_INICIO_Y)
-from entities.Objetos_Madre import ObjetoJuego
 from entities.proyectiles import Proyectil
 from entities.Explosion import Explosion
 from entities.iterador_disparos import Iterador_disparos, Iterador_disparos_inverso
 from decorador import registrar_evento
 
 
-class Arwing(ObjetoJuego):
+class Arwing(pygame.sprite.Sprite):
 
     def __init__(self, sistema_logros):
         # Llamamos al constructor de la clase base
-        super().__init__(pos_x=POS_INICIO_X, pos_y=POS_INICIO_Y)
+        super().__init__()
         self.sistema_logros = sistema_logros
         # Configuraciones del Airwing
         self.disparos_para_powerup = 25 # Cantidad de disparos para generar un objeto powerup
@@ -35,6 +34,7 @@ class Arwing(ObjetoJuego):
         self.puede_recibir_dano = True
         self.tiempo_invulnerabilidad = 1300  # 1.3 segundos
         self.tiempo_parpadeo = 100 # parpadeo del airwing luego de recibir daño en milisegundos
+        self.muerto = False
 
         # Cargar sprite del Airwing
         ruta_airwing = os.path.join("assets", "images", "player", "nave_fox.png")
@@ -72,7 +72,7 @@ class Arwing(ObjetoJuego):
             "disparo_normal": {
                 "color": (0, 255, 255),  # Azul celeste
                 "velocidad": -600,
-                "danio": 10,
+                "danio": 30,
                 "tamanio": (6, 18),
                 "cantidad_balas": 1,
                 "cadencia": 0.20
@@ -80,7 +80,7 @@ class Arwing(ObjetoJuego):
             "disparo_doble": {
                 "color": (0, 255, 0),  # Verde
                 "velocidad": -650,
-                "danio": 12,
+                "danio": 40,
                 "tamanio": (6, 20),
                 "cantidad_balas": 2,
                 "cadencia": 0.30
@@ -88,7 +88,7 @@ class Arwing(ObjetoJuego):
             "disparo_laser": {
                 "color": (255, 50, 50),  # Rojo brillante
                 "velocidad": -700,
-                "danio": 15,
+                "danio": 50,
                 "tamanio": (7, 22),
                 "cantidad_balas": 1,
                 "cadencia": 0.40
@@ -105,7 +105,9 @@ class Arwing(ObjetoJuego):
             self.puede_recibir_dano = False
             self.tiempo_ultima_colision = pygame.time.get_ticks()
 
-    def update(self, segundos_por_frame, meteoritos):
+    def update(self, segundos_por_frame):
+        if self.muerto:
+            return # Bloqueamos la "nave" para simular perdida total
         self.tiempo_ultimo_disparo += segundos_por_frame
         # Recuperar velocidad luego del impacto con meteoritos
         if self.esta_lenta:
@@ -261,23 +263,21 @@ class Arwing(ObjetoJuego):
         if not self.puede_recibir_dano:
             return
 
+        # Activar invulnerabilidad y parpadeo
+        self.puede_recibir_dano = False
+        self.tiempo_ultima_colision = pygame.time.get_ticks()
+        
         # Aplicar daño a la salud
         self.salud -= cantidad
     
         # Degradar disparo al recibir daño
         self.degradar_disparo()
     
-        # Activar invulnerabilidad y parpadeo
-        self.puede_recibir_dano = False
-        self.tiempo_ultima_colision = pygame.time.get_ticks()
+
     
-        # Si muere, explota
-        if self.salud <= 0:
-            self.explotar()
-
-
     # Método para eliminar la nave
-    def explotar(self):
+    def explotar(self, grupo_sprites):
         explosion = Explosion(self.rect.centerx, self.rect.centery)
-        #todos_los_sprites.add(explosion)
+        grupo_sprites.add(explosion)
         self.kill()
+
