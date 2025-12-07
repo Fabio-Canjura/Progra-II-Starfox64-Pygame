@@ -7,6 +7,8 @@ import os
 from constantes import ANCHO, ALTO, FPS
 from entities.airwing import Arwing
 from entities.Orquestrador_hostiles import OrquestadorHostiles
+from entities.Contador_Partidas import Contador_Partidas
+
 
 from fondo import fondo
 from entities.power_up import power_up
@@ -36,6 +38,9 @@ grupo_enemigos = pygame.sprite.Group()
 
 # Crear sistema de logros
 sistema_logros = SistemaLogros()
+
+# crear contador de partidas
+contador_partidas = Contador_Partidas()
 
 # Creación de nave Airwing
 arwing = Arwing(sistema_logros) # agregar los logros al arwing
@@ -118,6 +123,102 @@ def pantalla_inicio():
         texto = fuente.render("PRESIONA ENTER PARA INICIAR", True, (255, 255, 255))
         texto_rect = texto.get_rect(center=(ANCHO // 2, int(ALTO * 0.80)))
         ventana.blit(texto, texto_rect)
+
+        pygame.display.update()
+        
+# Pantalla de muerte
+
+def pantalla_muerte(): 
+    ejecutando_muerte = True
+
+    ruta_fondo_muerte = os.path.join("assets", "images", "backgrounds", "pantalla_muerte.png")
+
+    try:
+        fondo_muerte = pygame.image.load(ruta_fondo_muerte)
+        fondo_muerte = pygame.transform.scale(fondo_muerte, (ANCHO, ALTO))
+    except:
+        fondo_muerte = pygame.Surface((ANCHO, ALTO))
+        fondo_muerte.fill((20, 0, 0))
+
+    fuente_texto = pygame.font.Font(None, 40)
+
+    # Registrar derrota
+    contador_partidas.registrar_derrota()
+
+    while ejecutando_muerte:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    return "reiniciar"
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    exit()
+
+        ventana.blit(fondo_muerte, (0, 0))
+
+        # Mensajes en pantalla
+        mensaje1 = fuente_texto.render("ENTER para reiniciar", True, (255, 255, 255))
+        mensaje2 = fuente_texto.render("ESC para salir", True, (200, 200, 200))
+
+        mensaje1_rect = mensaje1.get_rect(center=(ANCHO // 2, int(ALTO * 0.70)))
+        mensaje2_rect = mensaje2.get_rect(center=(ANCHO // 2, int(ALTO * 0.80)))
+
+        ventana.blit(mensaje1, mensaje1_rect)
+        ventana.blit(mensaje2, mensaje2_rect)
+
+        
+        # mensaje del contador de derrotas
+        contador_texto = fuente_texto.render(contador_partidas.texto(), True, (255,255,255))
+        ventana.blit(contador_texto, (10, 10))
+
+        pygame.display.update()
+
+def pantalla_victoria(): 
+    ejecutando_victoria = True
+
+    ruta_fondo_victoria = os.path.join("assets", "images", "player", "Pantalla_Victoria.png")
+    try:
+        fondo_victoria = pygame.image.load(ruta_fondo_victoria)
+        fondo_victoria = pygame.transform.scale(fondo_victoria, (ANCHO, ALTO))
+    except:
+        fondo_victoria = pygame.Surface((ANCHO, ALTO))
+        fondo_victoria.fill((0, 40, 0))
+
+    fuente_texto = pygame.font.Font(None, 50)
+
+    # Registrar victoria
+    contador_partidas.registrar_victoria()
+
+    while ejecutando_victoria:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    return "reiniciar"
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    exit()
+
+        ventana.blit(fondo_victoria, (0, 0))
+
+        mensaje_vic1 = fuente_texto.render("¡VICTORIA!", True, (255, 215, 0))
+        mensaje_vic2 = fuente_texto.render("ENTER para jugar otra vez", True, (255, 255, 255))
+        mensaje_vic3 = fuente_texto.render("ESC para salir", True, (200, 200, 200))
+
+        ventana.blit(mensaje_vic1, mensaje_vic1.get_rect(center=(ANCHO // 2, int(ALTO * 0.75))))
+        ventana.blit(mensaje_vic2, mensaje_vic2.get_rect(center=(ANCHO // 2, int(ALTO * 0.82))))
+        ventana.blit(mensaje_vic3, mensaje_vic3.get_rect(center=(ANCHO // 2, int(ALTO * 0.90))))
+
+        # mensaje del contador de victorias
+        contador_texto = fuente_texto.render(contador_partidas.texto(), True, (255,255,255))
+        ventana.blit(contador_texto, (10, 10))
 
         pygame.display.update()
 
@@ -216,6 +317,38 @@ while ejecutando:
     if arwing.salud <= 0:
         arwing.muerto = True
         arwing.explotar(todos_los_sprites)
+
+    # si arwing muere detener el loop y enviar a pantalla de muerte
+
+    if arwing.muerto:
+        pygame.time.delay(500)
+        resultado = pantalla_muerte()
+
+        if resultado == "reiniciar":
+
+            # Limpiar grupos
+            todos_los_sprites.empty()
+            grupo_balas_arwing.empty()
+            grupo_balas_enemigo.empty()
+            grupo_enemigos.empty()
+            meteoritos.empty()
+            grupo_powerups.empty()
+
+            # Reiniciar contadores
+            meteoritos_destruidos = 0
+
+            # Crear un Arwing nuevo
+            arwing = Arwing(sistema_logros)
+            todos_los_sprites.add(arwing)
+
+            # Reiniciar orquestador
+            orquestador = OrquestadorHostiles(grupo_enemigos)
+
+            # Evitar que se quede el arwing en estado muerto
+            arwing.muerto = False
+
+            # Saltar al siguiente ciclo del loop principal
+            continue   
     
     # Colisiones directas Arwing
     for hostil in list(meteoritos) + list(grupo_enemigos):
@@ -235,6 +368,40 @@ while ejecutando:
             # Resetear contadores para la nueva oleada
             orquestador.enemigos_generados = 0
             orquestador.ultimo_meteorito = pygame.time.get_ticks()
+
+    # Reiniciar el juego despues de obtener victoria
+    
+    if (orquestador.oleada_actual >= len(orquestador.oleadas) and len(grupo_enemigos) == 0):
+            sistema_logros.activar("juego_completado")
+
+            # ⚠️ Mostrar logro antes de cambiar de escena
+            fondo_juego.dibujar_en(ventana)
+            todos_los_sprites.draw(ventana)
+            sistema_logros.dibujar(ventana, pygame.font.Font(None, 26), ANCHO)
+            pygame.display.flip()
+
+            pygame.time.delay(1200)  # tiempo para que el jugador vea el logro
+
+            resultado = pantalla_victoria()
+
+            if resultado == "reiniciar":
+
+                todos_los_sprites.empty()
+                grupo_balas_arwing.empty()
+                grupo_balas_enemigo.empty()
+                grupo_enemigos.empty()
+                meteoritos.empty()
+                grupo_powerups.empty()
+
+                meteoritos_destruidos = 0
+
+                arwing = Arwing(sistema_logros)
+                todos_los_sprites.add(arwing)
+
+                orquestador = OrquestadorHostiles(grupo_enemigos)
+
+                continue 
+               
 
     
     # Carga de sprites en la pantalla de juego
