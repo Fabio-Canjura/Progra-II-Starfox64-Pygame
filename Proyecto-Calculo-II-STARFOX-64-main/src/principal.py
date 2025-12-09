@@ -86,7 +86,7 @@ def reproducir_musica_inicio():
     pygame.mixer.music.set_volume(0.6)
 
 def reproducir_musica_juego():
-    ruta_musica = os.path.join("assets", "audio", "Fondos audio", "space_sound.mp3")
+    ruta_musica = os.path.join("assets", "audio", "Fondos audio", "batalla_sound.mp3")
     pygame.mixer.music.load(ruta_musica)
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.6)
@@ -374,7 +374,7 @@ while ejecutando:
     if (orquestador.oleada_actual >= len(orquestador.oleadas) and len(grupo_enemigos) == 0):
             sistema_logros.activar("juego_completado")
 
-            # ⚠️ Mostrar logro antes de cambiar de escena
+            # Mostrar logro antes de cambiar de escena
             fondo_juego.dibujar_en(ventana)
             todos_los_sprites.draw(ventana)
             sistema_logros.dibujar(ventana, pygame.font.Font(None, 26), ANCHO)
